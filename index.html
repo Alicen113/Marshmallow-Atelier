@@ -111,7 +111,7 @@ body.piping-layout #dishShelf .dishSample{width:20px;height:20px;margin:0;border
 </head>
 <body>
 <canvas id="world" aria-label="俯瞰視点のマシュマロ作り。マウスまたはタッチで操作できます。"></canvas>
-<header><div class="brand">マシュマロを作ろう</div><div class="controls"><button id="zoomOut" aria-label="ズームアウト" title="ズームアウト">−</button><button id="zoomReset" aria-label="ズームを標準に戻す" title="標準倍率に戻す">100%</button><button id="zoomIn" aria-label="ズームイン" title="ズームイン">＋</button><button id="bgmToggle" aria-label="BGMの切り替え">BGM ON</button><button id="sound" aria-label="音の切り替え">♪</button><button id="pause">一時停止</button><button id="restart">↺</button></div></header>
+<header><div class="brand">マシュマロを作ろう</div><div class="controls"><button id="zoomOut" aria-label="ズームアウト" title="ズームアウト">−</button><button id="zoomReset" aria-label="ズームを標準に戻す" title="標準倍率に戻す">100%</button><button id="zoomIn" aria-label="ズームイン" title="ズームイン">＋</button><button id="bgmToggle" aria-label="BGMの切り替え">BGM ON</button><button id="bgmTrack" aria-label="BGMの種類を変更" title="クリックで3曲を切り替え">曲：クッキング</button><button id="sound" aria-label="音の切り替え">♪</button><button id="pause">一時停止</button><button id="restart">↺</button></div></header>
 <div id="reference">WASD：カメラ移動（全工程）<br><span id="stepList"></span></div>
 <div id="palette" class="hidden"><b id="paletteTitle">アイシングカラー</b><div id="colourTools" class="hidden"><button id="addDish">＋ 小皿を取る</button><div><button id="dishPrev">← 前の小皿</button><button id="dishNext">次の小皿 →</button></div><p id="dishInfo"></p></div><div id="swatches"></div><div id="colourName"></div><div id="pipeOptions"><label for="shape">絞り出す形</label><select id="shape"><option value="round">まるいマシュマロ</option><option value="heart">ハート</option><option value="bunny">うさぎ</option></select><label for="size">大きさ</label><input id="size" type="range" min="0.75" max="1.3" step="0.05" value="1"><div style="line-height:1.7;margin-top:6px">押し続けるとふくらみます。離すと絞り終わります。</div></div></div>
 <section id="card"><div id="label">HANDMADE LITTLE CLOUDS</div><h2 id="title">ふわふわを、ひとつずつ。</h2><p id="instruction">メレンゲから作る、マシュマロのお菓子工房。</p><div id="progress" role="progressbar" aria-label="工程の進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="fill"></div></div><div id="metric">マウス・タッチで調理します</div><button id="next" class="hidden">次へ →</button></section>
@@ -661,6 +661,59 @@ function cancelCombineDrag(){combineDrag.kind=null;combineMotion=0;mixTurn=0;if(
 function dropCombineDrag(){if(combineDrag.kind==='gelatin'&&Math.hypot(smallBowl.position.x,smallBowl.position.z)<.65){combinePhase='gelatinPour';gelatinPourTime=0;combineSeconds=0;if(smallBowl.parent!==scene)scene.attach(smallBowl);smallBowl.position.set(-.16,1.34,-1.33);smallBowl.rotation.set(.72,0,0);smallBowl.visible=true;tone(720);toast('溶かしゼラチンを注いでいます。金色の流れと液面の変化を確認しましょう')}cancelCombineDrag()}
 let stage=-1,progress=0,running=false,paused=false,complete=false,photo=false,age=0,whipDistance=0,sugar=0,toastTimer=0,heat=22;const dustCoverage=new Set();let audio=null,sound=true;
 let kitchenAudio=null,bgmAudio=null,bgmEnabled=true;
+let bgmTrackIndex=0,bgmBuffers=null;
+const bgmTrackNames=['クッキング','カフェ','lofi-chill'];
+// Render the extra tracks once; playback needs only one looping buffer source.
+function renderExtraBGM(style){
+ const rate=22050,bpm=style==='cafe'?84:72,beat=60/bpm;
+ const buffer=audio.createBuffer(1,Math.round(beat*16*rate),rate),out=buffer.getChannelData(0);
+ const progression=[[130.8128,164.8138,195.9977,246.9417],[110,130.8128,164.8138,195.9977],[87.3071,110,130.8128,164.8138],[97.9989,123.4708,146.8324,174.6141]];
+ let noiseSeed=9157;const noise=()=>{noiseSeed=(Math.imul(noiseSeed,1664525)+1013904223)>>>0;return noiseSeed/2147483648-1;};
+ function note(at,f,duration,level,kind){
+  const start=Math.round(at*rate),count=Math.ceil(duration*rate);let phase=0,softNoise=0;
+  for(let i=0;i<count;i++){
+   const t=i/rate,tail=Math.min(1,(duration-t)/.025);let value=0;
+   if(kind==='hat'){
+    const n=noise();value=(n-softNoise)*Math.exp(-t*65);softNoise=n;
+   }else if(kind==='kick'){
+    phase+=TAU*(45+75*Math.exp(-t*35))/rate;value=Math.sin(phase)*Math.exp(-t*13)*Math.min(1,t/.005);
+   }else{
+    const drift=style==='lofi'?1+.0018*Math.sin(TAU*.45*(at+t)):1;
+    phase+=TAU*f*drift/rate;
+    const attack=Math.min(1,t/(kind==='bass'?.018:.012));
+    value=(Math.sin(phase)+.23*Math.sin(phase*2)*Math.exp(-t*4)+.07*Math.sin(phase*3)*Math.exp(-t*8))*attack*Math.exp(-t*(kind==='bass'?3.2:2.3));
+   }
+   out[(start+i)%out.length]+=value*level*Math.max(0,tail);
+  }
+ }
+ for(let bar=0;bar<4;bar++){
+  const chord=progression[bar],base=bar*4*beat;
+  for(const b of [0,1.5,3])chord.forEach((f,j)=>note(base+b*beat+j*.008,f*2,beat*2,.018,'keys'));
+  for(let b=0;b<4;b++)note(base+b*beat,chord[b%2?2:0]*.5,beat*.85,.042,'bass');
+  const melody=style==='cafe'?[2,3,1,2]:[3,2,1,2];
+  for(let j=0;j<4;j++)note(base+(j+.5)*beat,chord[melody[(j+bar)%4]]*4,beat*.8,.017,'keys');
+  if(style==='lofi'){
+   for(const b of [0,2.5])note(base+b*beat,0,.32,.040,'kick');
+   for(let b=0;b<8;b++)note(base+(b*.5+(b%2?.065:0))*beat,0,.08,b%2?.008:.012,'hat');
+  }
+ }
+ return buffer;
+}
+function switchBGMTrack(){
+ bgmTrackIndex=(bgmTrackIndex+1)%bgmTrackNames.length;
+ $('bgmTrack').textContent='曲：'+bgmTrackNames[bgmTrackIndex];
+ wake();
+ if(!audio||!bgmAudio||!bgmBuffers)return;
+ const at=audio.currentTime,old=bgmAudio;
+ old.gain.gain.cancelScheduledValues(at);old.gain.gain.setTargetAtTime(0,at,.055);
+ old.source.stop(at+.4);
+ old.source.onended=()=>{old.source.disconnect();old.filter.disconnect();old.gain.disconnect();};
+ const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+ source.buffer=bgmBuffers[bgmTrackIndex];source.loop=true;filter.type='lowpass';filter.frequency.value=bgmTrackIndex===2?2600:3800;gain.gain.value=0;
+ source.connect(filter);filter.connect(gain);gain.connect(audio.destination);source.start(at);
+ bgmAudio={source,filter,gain};updateBGM();
+}
+$('bgmTrack').onclick=switchBGMTrack;
 // 提供された「コミカル・まったりクッキング」をWeb Audio APIで合成。
 // 108 BPM、木琴メロディ・ピチカート・C→Am→F→Gをそのまま使用。
 // 初回だけバッファに合成し、調理中のタイマーや音源ノード増殖を避ける。
@@ -697,7 +750,8 @@ function initBGM(){
   if(step%8===0)for(const frequency of chords[step/8])synth(start,frequency*.5,'recorder');
  }
  const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
- source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=3800;
+ bgmBuffers=[buffer,renderExtraBGM('cafe'),renderExtraBGM('lofi')];
+ source.buffer=bgmBuffers[bgmTrackIndex];source.loop=true;filter.type='lowpass';filter.frequency.value=bgmTrackIndex===2?2600:3800;
  gain.gain.value=0;source.connect(filter);filter.connect(gain);gain.connect(audio.destination);
  source.start();bgmAudio={source,filter,gain};
 }
