@@ -134,6 +134,7 @@ const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t,TAU=Ma
 let seed=63289;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
 const canvas=$('world'),renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.15));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.94;
 const scene=new T.Scene();scene.background=new T.Color('#505761');const camera=new T.OrthographicCamera(-4,4,3,-3,.1,30);camera.position.set(0,12,.65);camera.up.set(0,0,-1);camera.lookAt(0,0,.65);
+const cameraPan=new T.Vector3();
 let viewScale=2/3;const MIN_VIEW_SCALE=.05,MAX_VIEW_SCALE=2;
 let workspaceStage=-1,workViewport={x:0,y:0,width:innerWidth,height:innerHeight};
 function layoutWorkViewport(){
@@ -159,7 +160,19 @@ offsetX=((left+right)/2-innerWidth/2)/innerWidth*w-matCenter.x;
 offsetY=(innerHeight/2-(top+bottom)/2)/innerHeight*h-matCenter.y;
 }else if(workspaceStage===11){h=Math.max(4.4,4.6/a);w=h*a;w*=viewScale/(2/3);h*=viewScale/(2/3)}else{if(a>=1){h=6.4;w=h*a}else{w=5.15;h=w/a}w*=viewScale;h*=viewScale}
 camera.left=-w/2-offsetX;camera.right=w/2-offsetX;camera.top=h/2-offsetY;camera.bottom=-h/2-offsetY;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}resize();window.addEventListener('resize',resize);
-function zoomView(value){viewScale=clamp(value,MIN_VIEW_SCALE,MAX_VIEW_SCALE);resize();$('zoomReset').textContent=Math.round(100/viewScale)+'%';$('zoomOut').disabled=viewScale>=MAX_VIEW_SCALE;$('zoomIn').disabled=viewScale<=MIN_VIEW_SCALE}
+function zoomView(value){
+// Preserve the world point at the current screen centre. UI-aware resize()
+// reframes the mat; compensate that projection shift instead of losing touch pan.
+camera.updateMatrixWorld(true);
+const before=new T.Vector3(0,0,0).unproject(camera);
+viewScale=clamp(value,MIN_VIEW_SCALE,MAX_VIEW_SCALE);resize();
+camera.updateMatrixWorld(true);
+const after=new T.Vector3(0,0,0).unproject(camera),delta=before.sub(after);
+if([delta.x,delta.y,delta.z].every(Number.isFinite)){
+camera.position.add(delta);cameraPan.add(delta);camera.updateMatrixWorld(true);
+}
+$('zoomReset').textContent=Math.round(100/viewScale)+'%';$('zoomOut').disabled=viewScale>=MAX_VIEW_SCALE;$('zoomIn').disabled=viewScale<=MIN_VIEW_SCALE;
+}
 $('zoomOut').onclick=()=>zoomView(viewScale*1.15);$('zoomIn').onclick=()=>zoomView(viewScale/1.15);$('zoomReset').onclick=()=>zoomView(2/3);zoomView(2/3);
 // Anchor wheel zoom to the surface underneath the pointer, in either direction.
 canvas.addEventListener('wheel',e=>{e.preventDefault();if(ptr.down||orbiting)return;const rect=canvas.getBoundingClientRect(),uv=new T.Vector2((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2),probe=new T.Raycaster();scene.updateMatrixWorld(true);probe.setFromCamera(uv,camera);const surfaceHits=probe.intersectObjects(pieces,true).filter(h=>h.object.visible),anchor=surfaceHits.length?surfaceHits[0].point.clone():probe.ray.intersectPlane(new T.Plane(new T.Vector3(0,1,0),-.124),new T.Vector3());const zoomPlane=anchor?new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),anchor):null;zoomView(viewScale*Math.exp(clamp(e.deltaY,-150,150)*.0015));if(anchor&&zoomPlane){probe.setFromCamera(uv,camera);const after=probe.ray.intersectPlane(zoomPlane,new T.Vector3());if(after){const delta=anchor.clone().sub(after);camera.position.add(delta);cameraPan.add(delta);camera.updateMatrixWorld(true)}}project(e)},{passive:false});
@@ -358,7 +371,7 @@ function rotateAroundPointer(dx,dy){
  camera.updateMatrixWorld(true);
 }
 function spacePiping(){return pipingTool==='bag'&&pipeDrawMode==='space'}
-const pipeHistory=[],pipeRedoHistory=[],cameraPan=new T.Vector3(),cameraKeys=new Set();
+const pipeHistory=[],pipeRedoHistory=[],cameraKeys=new Set();
 function recordPipeHistory(entry){pipeRedoHistory.length=0;pipeHistory.push(entry);updatePipeHistoryButtons();}
 function updatePipeHistoryButtons(){if($('redoPipe'))$('redoPipe').disabled=!pipeRedoHistory.length;if($('undoPipe'))$('undoPipe').disabled=!pipeHistory.length;}
 function capturePipeState(){return pieces.map(p=>({piece:p,children:[...p.children],scales:p.children.map(o=>o.scale.clone())}));}
@@ -597,7 +610,7 @@ for(const [id,cls,other] of [['touchTools','touch-tools-open','touch-help-open']
 function touchPanPixels(dx,dy){const delta=new T.Vector3(-dx*(camera.right-camera.left)/canvas.clientWidth,dy*(camera.top-camera.bottom)/canvas.clientHeight,0).applyQuaternion(camera.quaternion);camera.position.add(delta);cameraPan.add(delta);camera.updateMatrixWorld(true);}
 function touchPair(){const p=[...touchPointers.values()];return p.length<2?null:{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.max(8,Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y))};}
 canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!running||paused)return;touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(touchPointers.size>=2||touchMove){e.preventDefault();e.stopImmediatePropagation();if(!touchGesture){release();endSquish();touchGesture=true;if(touchRotate&&(stage===6||complete&&photo))setPointerOrbitPivot();}canvas.setPointerCapture(e.pointerId);}},true);
-canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId))return;const previous=touchPointers.get(e.pointerId),before=touchPair();touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!touchGesture)return;e.preventDefault();e.stopImmediatePropagation();if(paused)return;const after=touchPair();if(before&&after){const factor=before.d/after.d;if(Math.abs(factor-1)>.0005){const position=camera.position.clone();zoomView(viewScale*factor);camera.position.copy(position);camera.updateMatrixWorld(true);}if(touchRotate&&(stage===6||complete&&photo))rotateAroundPointer(after.x-before.x,after.y-before.y);else touchPanPixels(after.x-before.x,after.y-before.y);}else if(touchMove)touchPanPixels(e.clientX-previous.x,e.clientY-previous.y);},true);
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId))return;const previous=touchPointers.get(e.pointerId),before=touchPair();touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!touchGesture)return;e.preventDefault();e.stopImmediatePropagation();if(paused)return;const after=touchPair();if(before&&after){const factor=before.d/after.d;if(Math.abs(factor-1)>.0005){zoomView(viewScale*factor);if(touchRotate&&(stage===6||complete&&photo))setPointerOrbitPivot();}if(touchRotate&&(stage===6||complete&&photo))rotateAroundPointer(after.x-before.x,after.y-before.y);else touchPanPixels(after.x-before.x,after.y-before.y);}else if(touchMove)touchPanPixels(e.clientX-previous.x,e.clientY-previous.y);},true);
 function finishTouchGesture(e){if(e.pointerType!=='touch')return;touchPointers.delete(e.pointerId);if(touchGesture){e.preventDefault();e.stopImmediatePropagation();if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(!touchPointers.size){touchGesture=false;release();}}}
 canvas.addEventListener('pointerup',finishTouchGesture,true);canvas.addEventListener('pointercancel',finishTouchGesture,true);window.addEventListener('blur',()=>{touchPointers.clear();touchGesture=false;});
 const eyeMat=mat('#383346',.34),eyeShine=mat('#e9e6dc',.3),earMat=mat('#bd778c',.8);
