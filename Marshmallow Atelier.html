@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Marshmallow Atelier — ふわふわマシュマロ工房</title>
+<style>
+:root{color-scheme:light;--ink:#302c30;--paper:#f0e8dd;--accent:#995c70}*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#555e66;color:var(--ink);font-family:system-ui,sans-serif;user-select:none}button,input{font:inherit}button{cursor:pointer;border:1px solid #b4a79d;background:#eee6db;color:#383139;padding:10px 15px;border-radius:10px}button:hover{background:#dfd0c3}button:focus-visible,input:focus-visible{outline:3px solid #c37894;outline-offset:2px}#world{position:fixed;inset:0;width:100%;height:100%;touch-action:none}header{position:fixed;top:18px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center;gap:12px;pointer-events:none;color:#faf1e6;text-shadow:0 1px 4px #252128}.brand{font:25px Georgia,serif}.brand small{display:block;font:10px system-ui;letter-spacing:.15em;margin-top:6px}.controls{display:flex;gap:7px;pointer-events:auto;text-shadow:none}.controls button{padding:9px 12px}#card{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 24px));background:#eee6dbf5;border:1px solid #b5a697;box-shadow:0 10px 35px #16162045;border-radius:17px;padding:17px 21px}#label{font-size:10px;letter-spacing:.15em;color:#865467}h2{font:23px Georgia,serif;margin:8px 0}#instruction{font-size:12px;line-height:1.8;margin:0}#progress{height:6px;background:#cfc3b7;border-radius:10px;margin-top:12px;overflow:hidden}#fill{height:100%;background:#8a566a;width:0;transition:width .15s}#metric{font-size:11px;color:#655561;margin-top:8px}#next{position:fixed;right:20px;bottom:20px;z-index:12;background:#795c6c;color:white;border:1px solid #b99ba8;box-shadow:0 4px 18px #18152255;padding:13px 19px}#palette.colouring{width:218px;max-height:calc(100dvh - 190px);overflow:auto;top:86px}#palette.colouring #swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}#palette.colouring .swatch{width:33px;height:33px}#colourTools{line-height:1.8}#colourTools button{padding:6px 9px;margin:3px 1px;font-size:11px}#colourTools p{font-size:11px;margin:7px 0}#colourName{font-size:11px;min-height:32px}#card{bottom:82px}#card #next{float:none} @media(max-width:650px){#palette.colouring{width:162px;top:75px;max-height:calc(100dvh - 260px)}#palette.colouring .swatch{width:26px;height:26px}#next{right:12px;bottom:12px}}#card:after{content:'';display:block;clear:both}.hidden{display:none!important}#palette{position:fixed;top:94px;right:20px;width:155px;border:1px solid #b5a697;border-radius:13px;background:#eee6dbf5;padding:12px;font-size:11px;box-shadow:0 8px 25px #15182030}#swatches{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.swatch{width:26px;height:26px;padding:0;border:2px solid #e5d9cd;border-radius:50%}.swatch.selected{outline:2px solid #71445a}#palette select{width:100%;margin:7px 0;padding:5px;background:#f1e7dc;color:#343039}input{width:100%;accent-color:#995c70}#toast{position:fixed;top:82px;left:50%;transform:translateX(-50%);background:#302b34ed;color:#f7eadd;border-radius:20px;padding:10px 18px;font-size:12px;pointer-events:none;opacity:0;transition:opacity .2s;max-width:90%;text-align:center}#toast.show{opacity:1}.overlay{position:fixed;inset:0;background:#171e2b8c;backdrop-filter:blur(6px);display:grid;place-items:center;z-index:20}.sheet{width:min(480px,calc(100% - 30px));max-height:90dvh;overflow:auto;padding:30px;border:1px solid #a99087;border-radius:22px;text-align:center;background:#eee4d7;box-shadow:0 25px 80px #12142170}.sheet h1{font:39px/1.2 Georgia,serif;font-weight:400;margin:17px 0}.sheet p{font-size:12px;line-height:1.9}.sheet a{color:#7e4560}.primary{background:#805c70;border:0;color:white;padding:13px 24px;margin-top:10px}.fine{font-size:10px!important;color:#6b5b62}#loading{position:fixed;left:20px;bottom:22px;color:#fff;font-size:12px}#viewBack{position:fixed;bottom:20px;right:20px}#errorText{overflow-wrap:anywhere;user-select:text}#finish{background:#15192366;align-items:end;padding-bottom:20px;backdrop-filter:none;pointer-events:none}#finish .sheet{pointer-events:auto;padding:17px 25px;width:min(460px,calc(100% - 26px));background:#eee4d7f5}#finish h1{font-size:29px;margin:7px}#finish p{margin:6px}#reference{position:fixed;left:20px;top:92px;font-size:10px;color:#f4e9de;max-width:175px;line-height:1.8;pointer-events:none}@media(max-width:650px){header{top:12px;left:13px;right:13px}.brand{font-size:20px}.brand small{font-size:8px}.controls button{padding:8px}.sheet{padding:24px}#palette{top:80px;right:10px;width:132px;padding:10px}#reference{left:13px;top:81px;font-size:9px;max-width:130px}#card{padding:13px 16px;bottom:10px}h2{font-size:20px}#instruction{font-size:11px}#toast{top:65px;font-size:11px}#finish{padding-bottom:12px}}
+/* Colouring: a large, scene-anchored dish button and a utensil kept within the rim. */
+#addDish{position:fixed;z-index:11;width:144px;min-height:80px;padding:16px 12px;border:2px solid #be9caa;border-radius:15px;background:#795c6c;color:#fff;font-size:18px;font-weight:700;line-height:1.5;box-shadow:0 5px 18px #18152255;touch-action:manipulation}#addDish:hover{background:#906c80}#addDish.hidden{display:none!important}
+#dishShelf{position:fixed;left:14px;top:100px;width:158px;max-height:calc(100dvh - 340px);overflow:auto;padding:10px;border-radius:14px;background:#e9dfd3f2;border:1px solid #a9988b;z-index:9;font-size:11px}#dishShelf h3{margin:0 0 8px;font-size:13px}#dishShelf button{display:block;width:100%;margin:7px 0;padding:9px 5px;font-size:11px}.dishSample{display:block;margin:0 auto 5px;width:42px;height:42px;border:6px solid #718e93;border-radius:50%;box-shadow:inset 0 2px 4px #0003}#toolChoice .choices{display:flex;gap:12px;justify-content:center}#toolChoice .choices button{flex:1;padding:18px 10px}#toolStatus{line-height:1.8;font-size:12px}#palette{max-height:calc(100dvh - 190px);overflow:auto}#pipeHelp button{font-size:11px;padding:8px;margin:4px 0}#pipeHelp label{display:block;margin-top:8px}#pipeHelp output{float:right;color:#865467}#pipeHelp{font-size:11px;line-height:1.8} @media(max-width:650px){#dishShelf{left:6px;width:112px;top:85px;max-height:calc(100dvh - 360px)}}
+/* Tool settings stretch across the top; the work surface stays unobstructed. */
+#palette,#palette.colouring{top:82px;left:190px;right:18px;width:auto;max-height:34dvh;overflow:auto;padding:12px 16px;z-index:10}
+#paletteTitle{display:block;margin-bottom:6px}#palette #pipeHelp:not(.hidden){display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}#pipeHelp>p{flex:1 1 220px;margin:0;font-size:10px}#pipeHelp>label{margin:0;white-space:nowrap}#pipeHelp>input{width:145px}#pipeHelp>select{width:200px;margin:0}#pipeHelp output{float:none;margin-left:8px}#pipeHelp>button{margin:0;white-space:nowrap}#palette.colouring #colourTools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}#colourTools p{flex:1 1 240px;margin:0}#colourName{min-height:0;margin-top:5px}#dishShelf{top:82px;max-height:calc(100dvh - 260px)}
+@media(max-width:650px){#palette,#palette.colouring{top:74px;left:126px;right:8px;max-height:32dvh;padding:9px}#pipeHelp>p{flex-basis:180px}#pipeHelp>input{width:110px}#dishShelf{top:74px}header .brand{font-size:15px}.controls{gap:3px}.controls button{padding:6px}}
+/* Step 5 pagination stays on the right, independently of the dish button. */
+#dishPagination{position:fixed;right:18px;top:46%;z-index:11;display:flex;flex-direction:column;gap:10px;width:158px;padding:12px;background:#eee6dbf5;border:1px solid #b5a697;border-radius:14px;box-shadow:0 5px 18px #18152240}
+#dishPagination.hidden{display:none!important}#dishPagination button{margin:0;padding:13px 9px;font-size:12px}
+/* Step 6 has a dedicated, clipped work viewport below the toolbar. */
+body.piping-layout #palette{left:190px;right:18px;max-height:175px;max-height:min(28dvh,175px);overflow:auto}
+body.piping-layout #pipeHelp{gap:6px 12px}
+body.piping-layout #pipeHelp>input{width:110px}
+body.piping-layout #pipeHelp>select{width:165px}
+body.piping-layout #pipeHelp>label{font-size:11px}
+body.piping-layout #toolStatus{flex:1 1 100%;font-size:12px}
+#pipeDetails{flex:1 1 100%;font-size:11px}#pipeDetails summary{cursor:pointer;color:#865467}#pipeDetails p{margin:6px 0;line-height:1.7}
+body.piping-layout #card{max-height:130px;overflow:auto;bottom:78px;padding:10px 16px}
+body.piping-layout #card h2{font-size:18px;margin:4px 0}
+body.piping-layout #instruction{font-size:11px;line-height:1.5}
+body.piping-layout #dishShelf{bottom:220px;max-height:none}
+@media(max-width:650px){#dishPagination{right:8px;width:128px;padding:8px}body.piping-layout #palette{left:126px;right:8px}body.piping-layout #card{max-height:112px;bottom:72px}body.piping-layout #dishShelf{bottom:200px}}
+/* Layout revision: a right-hand colouring console; full-screen piping workspace. */
+body.colouring-layout #palette.colouring{left:auto;right:18px;top:82px;width:290px;max-height:calc(100dvh - 315px);padding:14px}
+body.colouring-layout #colourTools{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+body.colouring-layout #colourTools p{flex:none}
+body.colouring-layout #reference{left:auto;right:32px;top:92px;max-width:255px;z-index:11;color:#55434e;text-shadow:none}
+body.colouring-layout #paletteTitle{margin-top:88px}
+body.colouring-layout #card{left:auto;right:18px;bottom:82px;transform:none;width:290px;max-height:205px;overflow:auto;padding:13px}
+body.colouring-layout #card h2{font-size:19px}
+body.colouring-layout #dishPagination{right:18px;top:auto;bottom:300px;width:290px;flex-direction:row;padding:8px}
+body.colouring-layout #dishPagination button{flex:1;padding:10px 4px}
+body.piping-layout #palette{left:190px;right:18px;top:82px;max-height:145px;padding:10px 14px}
+body.piping-layout #paletteTitle,body.piping-layout #colourName,body.piping-layout #reference,body.piping-layout #card,body.piping-layout #toolStatus,body.piping-layout #pipeDetails{display:none!important}
+body.piping-layout #pipeHelp{display:flex;align-items:center;gap:8px 12px}
+body.piping-layout #dishShelf{top:82px;bottom:84px;max-height:none}
+body.piping-layout #pipeHelp>select{width:174px}
+body.piping-layout #pipeHelp>button{padding:9px 11px}
+body.piping-layout #pipeHeight,body.piping-layout label[for="pipeHeight"],body.piping-layout #pipeHelp>div,body.piping-layout #pipeHelp>label:not([for]){display:none}
+@media(max-width:650px){body.colouring-layout #palette.colouring{right:8px;width:215px;top:74px}body.colouring-layout #reference{right:20px;top:83px;max-width:188px}body.colouring-layout #card{right:8px;width:215px}body.colouring-layout #dishPagination{right:8px;width:215px}body.piping-layout #palette{left:126px;right:8px;top:74px;max-height:185px}body.piping-layout #dishShelf{top:74px;bottom:78px}body.piping-layout #pipeHelp>select{width:145px}}
+/* Compact button-based modelling toolbar. */
+body.piping-layout #pipeHelp{display:flex;align-items:center;gap:10px 14px}
+body.piping-layout #pipeHelp>.model-buttons{display:flex!important;flex-wrap:wrap;gap:5px;align-items:center}
+body.piping-layout #pipeHelp>.model-buttons button{padding:9px 11px;margin:0;font-size:12px;border-radius:8px}
+body.piping-layout #pipeHelp>.model-buttons button[aria-pressed="true"]{background:#795c6c;color:#fff;border-color:#795c6c;box-shadow:inset 0 0 0 1px #e4ced5}
+body.piping-layout #pipeHelp>label[for="pipeDrawMode"],body.piping-layout #pipeHelp>label[for="creamShape"],body.piping-layout #pipeHelp>label[for="pipeThickness"]{display:block;font-weight:600}
+body.piping-layout #palette{max-height: min(34dvh,240px)}
+body.piping-layout #pipeThickness{width:150px}
+/* Step 6: a separate right-hand instruction panel, outside the work area. */
+body.piping-layout #card{display:block!important;left:auto;right:18px;top:250px;bottom:auto;transform:none;width:245px;max-height:calc(100dvh - 340px);padding:15px;overflow:auto}
+body.piping-layout #card #label,body.piping-layout #card #progress,body.piping-layout #card #metric{display:none!important}
+body.piping-layout #card h2{font:20px system-ui;margin:0 0 12px}
+body.piping-layout #card #instruction{font-size:12px;line-height:1.85}
+@media(max-width:650px){body.piping-layout #card{right:8px;top:270px;width:155px;padding:10px;max-height:calc(100dvh - 350px)}body.piping-layout #card h2{font-size:16px}body.piping-layout #card #instruction{font-size:10px}}
+/* Smartphone controls and compact panels */
+#touchControls{display:none}button{touch-action:manipulation}#world{overscroll-behavior:none;-webkit-touch-callout:none}
+@media(pointer:coarse),(max-width:750px){
+body{height:100dvh;overscroll-behavior:none}header{top:8px;left:8px;right:8px;align-items:flex-start}.brand{font:bold 15px system-ui;max-width:125px}.controls{flex-wrap:wrap;justify-content:flex-end;gap:3px;max-width:65%}.controls button{min-height:38px;padding:7px 9px;font-size:11px}#restart{display:none}
+#touchControls:not(.hidden){display:flex;position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);gap:5px;z-index:15;white-space:nowrap}#touchControls button{font-size:12px;min-height:42px;padding:9px 12px;background:#eee6dbf5}#touchControls button[aria-pressed="true"]{background:#795c6c;color:white}
+#next,#previousStep{bottom:calc(10px + env(safe-area-inset-bottom));padding:12px 10px;font-size:12px;min-height:46px}#next{right:8px}#previousStep{left:8px}#reference{display:none!important}#card{left:8px;right:8px;bottom:132px;width:auto;transform:none;max-height:125px;overflow:auto;padding:10px 12px}#card h2{font-size:17px}#instruction{font-size:11px}#toast{top:90px;z-index:30}
+body.piping-layout #dishShelf{left:8px;right:8px;top:88px;bottom:auto;width:auto;max-height:96px;padding:6px;overflow:auto}#dishShelf h3{font-size:10px;margin:0 0 3px}#dishShelfItems{display:flex;gap:6px;align-items:center}#dishShelfItems button{flex:0 0 76px;width:76px;margin:0;padding:5px;font-size:10px;min-height:54px}.dishSample{width:27px;height:27px;border-width:4px;margin-bottom:2px}
+body.piping-layout #palette{left:8px;right:8px;top:190px;max-height:calc(100dvh - 330px);padding:10px}body.piping-layout #pipeHelp{gap:8px}body.piping-layout #pipeHelp>.model-buttons button{min-height:42px;font-size:12px}body.piping-layout #pipeThickness{width:170px;min-height:38px}body.piping-layout #card{top:190px;bottom:auto;left:8px;right:8px;width:auto;max-height:calc(100dvh - 330px)}
+body.piping-layout:not(.touch-tools-open) #palette{display:none!important}body.piping-layout:not(.touch-help-open) #card{display:none!important}
+body.colouring-layout #palette.colouring{top:88px;right:8px;width:min(220px,58vw);max-height:calc(100dvh - 250px);padding:10px}body.colouring-layout #paletteTitle{margin-top:0}body.colouring-layout #card{right:8px;left:auto;width:min(220px,58vw);bottom:132px;max-height:125px}body.colouring-layout #dishPagination{right:8px;width:min(220px,58vw);bottom:265px}body.colouring-layout:not(.touch-tools-open) #palette,body.colouring-layout:not(.touch-tools-open) #dishPagination{display:none!important}body.colouring-layout:not(.touch-help-open) #card{display:none!important}
+#addDish{width:110px;min-height:58px;font-size:14px;padding:9px}#plateColourUI{top:90px!important;padding:8px!important}#plateColourUI input{height:38px!important;width:80px!important}.sheet{padding:20px}.sheet h1{font-size:30px}#viewBack{bottom:calc(12px + env(safe-area-inset-bottom));font-size:12px;max-width:95vw}#finish .sheet{margin-bottom:100px}
+}
+</style>
+</head>
+<body>
+<canvas id="world" aria-label="俯瞰視点のマシュマロ作り。マウスまたはタッチで操作できます。"></canvas>
+<header><div class="brand">マシュマロを作ろう</div><div class="controls"><button id="zoomOut" aria-label="ズームアウト" title="ズームアウト">−</button><button id="zoomReset" aria-label="ズームを標準に戻す" title="標準倍率に戻す">100%</button><button id="zoomIn" aria-label="ズームイン" title="ズームイン">＋</button><button id="bgmToggle" aria-label="BGMの切り替え">BGM ON</button><button id="sound" aria-label="音の切り替え">♪</button><button id="pause">一時停止</button><button id="restart">↺</button></div></header>
+<div id="reference">WASD：カメラ移動（全工程）<br><span id="stepList"></span></div>
+<div id="palette" class="hidden"><b id="paletteTitle">アイシングカラー</b><div id="colourTools" class="hidden"><button id="addDish">＋ 小皿を取る</button><div><button id="dishPrev">← 前の小皿</button><button id="dishNext">次の小皿 →</button></div><p id="dishInfo"></p><p>右のボウルから小皿へドラッグして取り分けます。下のカラー瓶から小皿へ爪楊枝を運び、小皿内をドラッグしてスプーンで混ぜてください。</p><p>色を混ぜ合わせることもできます。混ぜた生地に別のカラーを加えると、お好みの色を作れます。</p></div><div id="swatches"></div><div id="colourName"></div><div id="pipeOptions"><label for="shape">絞り出す形</label><select id="shape"><option value="round">まるいマシュマロ</option><option value="heart">ハート</option><option value="bunny">うさぎ</option></select><label for="size">大きさ</label><input id="size" type="range" min="0.75" max="1.3" step="0.05" value="1"><div style="line-height:1.7;margin-top:6px">押し続けるとふくらみます。離すと絞り終わります。</div></div></div>
+<section id="card"><div id="label">HANDMADE LITTLE CLOUDS</div><h2 id="title">ふわふわを、ひとつずつ。</h2><p id="instruction">メレンゲから作る、マシュマロのお菓子工房。</p><div id="progress" role="progressbar" aria-label="工程の進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="fill"></div></div><div id="metric">マウス・タッチで調理します</div><button id="next" class="hidden">次へ →</button></section>
+<aside id="dishShelf" class="hidden"><h3>⑤で取り分けた小皿</h3><div id="dishShelfItems"></div></aside><div id="toolChoice" class="overlay hidden"><div class="sheet"><h2>どちらに入れますか？</h2><p id="selectedDishLabel"></p><div class="choices"><button id="chooseBag">絞り袋<br>本体・体を作る</button><button id="chooseCornet">コルネ<br>顔・目・小さなパーツ</button></div><button id="cancelTool" style="margin-top:15px">戻る</button></div></div>
+<button id="previousStep" class="hidden" style="position:fixed;left:18px;bottom:20px;z-index:12;padding:13px 19px">← 前の工程へ</button>
+<div id="plateColourUI" class="hidden" style="position:fixed;right:18px;top:86px;z-index:12;background:#eee6dbf5;border:1px solid #b5a697;border-radius:12px;padding:12px"><label for="plateColour">お皿の色</label><input id="plateColour" type="color" value="#59868a" style="display:block;width:110px;height:42px;margin-top:8px;cursor:pointer"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div class="overlay" id="intro"><div class="sheet"><div style="font-size:10px;letter-spacing:.2em;color:#875568">MARSHMALLOW ATELIER / No. 03</div><h1>A little cloud,<br>made by you.</h1><p>メレンゲを泡立て、110℃のシロップとゼラチンを合わせ、好きな形に絞りましょう。粉を振り、筆で払って、お皿に盛り付けたら完成です。</p><button class="primary" id="start">マシュマロを作る →</button><p><a href="https://www.youtube.com/watch?v=g2S3h1eEIEE" target="_blank" rel="noopener">参考：まんなたぬき「プリン マシュマロの作り方」</a></p><p class="fine">参考動画の公開説明欄にある工程・配合をもとにしたゲームです。キャラクターの再現ではなく、丸・ハート・うさぎを作れます。<br>時間・加熱・凝固はゲーム用に短縮しています。実際の調理手順や食品の安全性を再現するものではありません。</p></div></div>
+<div class="overlay hidden" id="pauseOverlay"><div class="sheet"><h1>A little break.</h1><p>作業を一時停止しています。</p><button id="resume" class="primary">続ける →</button></div></div>
+<div class="overlay hidden" id="finish"><div class="sheet"><div style="font-size:10px;letter-spacing:.2em;color:#875568">FRESHLY MADE BY YOU</div><h1>完成！</h1><p id="result"></p><button class="primary" id="view">お皿をゆっくり見る・ふにふに触る</button> <button id="again">もう一度作る</button></div></div>
+<button id="viewBack" class="hidden" title="右ドラッグで回転・ホイールでズーム">完成画面に戻る · 右ドラッグで回転</button>
+<div class="overlay hidden" id="error"><div class="sheet"><h1>読み込みできませんでした</h1><p>インターネット接続とWebGLの利用設定を確認してください。</p><p id="errorText"></p><button id="reload">再読み込み</button></div></div><div id="loading">工房を準備しています…</div>
+<script type="module">
+const $=id=>document.getElementById(id);document.body.appendChild($('addDish'));$('addDish').classList.add('hidden');$('addDish').textContent='＋ 小皿を取る';document.body.appendChild($('next'));$('next').classList.remove('hidden');$('reload').onclick=()=>location.reload();
+try {
+const T=await import('https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js');
+const dishPagination=document.createElement('div');dishPagination.id='dishPagination';dishPagination.className='hidden';const previousDishButton=$('dishPrev'),nextDishButton=$('dishNext'),oldPagination=previousDishButton.parentElement;dishPagination.append(previousDishButton,nextDishButton);oldPagination.remove();document.body.append(dishPagination);
+
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t,TAU=Math.PI*2;
+let seed=63289;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+const canvas=$('world'),renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.15));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.94;
+const scene=new T.Scene();scene.background=new T.Color('#505761');const camera=new T.OrthographicCamera(-4,4,3,-3,.1,30);camera.position.set(0,12,.65);camera.up.set(0,0,-1);camera.lookAt(0,0,.65);
+let viewScale=2/3;const MIN_VIEW_SCALE=.05,MAX_VIEW_SCALE=2;
+let workspaceStage=-1,workViewport={x:0,y:0,width:innerWidth,height:innerHeight};
+function layoutWorkViewport(){
+workViewport={x:0,y:0,width:innerWidth,height:innerHeight};
+}
+function resize(){layoutWorkViewport();const a=workViewport.width/workViewport.height;let w,h,offsetX=0,offsetY=0;if(workspaceStage>=0&&workspaceStage<=10){
+// At the default 150%, fit the whole tray into the area not occupied by UI.
+const shownRect=id=>{const el=$(id);return el&&!el.classList.contains('hidden')&&getComputedStyle(el).display!=='none'?el.getBoundingClientRect():null};
+const toolbar=shownRect('palette'),shelf=shownRect('dishShelf'),card=shownRect('card'),nextButton=shownRect('next');
+const touchLayout=matchMedia('(pointer:coarse), (max-width:750px)').matches;
+const left=workspaceStage===6&&shelf&&!touchLayout?shelf.right+18:18;
+const top=touchLayout?Math.max(100,workspaceStage===6&&shelf?shelf.bottom+12:100):workspaceStage===5?82:Math.max(82,toolbar?toolbar.bottom+18:82);
+const bottom=Math.max(top+80,Math.min(innerHeight-80,![5,6].includes(workspaceStage)&&card?card.top-18:innerHeight-80,nextButton?nextButton.top-16:innerHeight-80));
+const consoleRect=touchLayout?null:workspaceStage===5?shownRect('palette'):workspaceStage===6?card:null;
+const right=Math.max(left+80,consoleRect?consoleRect.left-18:innerWidth-18),safeW=Math.max(80,right-left),safeH=Math.max(80,bottom-top);
+// Frame the entire 4.8 × 3.65 mat, not just the smaller baking tray.
+h=Math.max(4.05*innerHeight/safeH,5.20*innerWidth/safeW/a);w=h*a;
+w*=viewScale/(2/3);h*=viewScale/(2/3);
+camera.updateMatrixWorld(true);
+const matCenter=new T.Vector3(0,0,0).applyMatrix4(camera.matrixWorldInverse);
+offsetX=((left+right)/2-innerWidth/2)/innerWidth*w-matCenter.x;
+offsetY=(innerHeight/2-(top+bottom)/2)/innerHeight*h-matCenter.y;
+}else if(workspaceStage===11){h=Math.max(4.4,4.6/a);w=h*a;w*=viewScale/(2/3);h*=viewScale/(2/3)}else{if(a>=1){h=6.4;w=h*a}else{w=5.15;h=w/a}w*=viewScale;h*=viewScale}
+camera.left=-w/2-offsetX;camera.right=w/2-offsetX;camera.top=h/2-offsetY;camera.bottom=-h/2-offsetY;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}resize();window.addEventListener('resize',resize);
+function zoomView(value){viewScale=clamp(value,MIN_VIEW_SCALE,MAX_VIEW_SCALE);resize();$('zoomReset').textContent=Math.round(100/viewScale)+'%';$('zoomOut').disabled=viewScale>=MAX_VIEW_SCALE;$('zoomIn').disabled=viewScale<=MIN_VIEW_SCALE}
+$('zoomOut').onclick=()=>zoomView(viewScale*1.15);$('zoomIn').onclick=()=>zoomView(viewScale/1.15);$('zoomReset').onclick=()=>zoomView(2/3);zoomView(2/3);
+// Anchor wheel zoom to the surface underneath the pointer, in either direction.
+canvas.addEventListener('wheel',e=>{e.preventDefault();if(ptr.down||orbiting)return;const rect=canvas.getBoundingClientRect(),uv=new T.Vector2((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2),probe=new T.Raycaster();scene.updateMatrixWorld(true);probe.setFromCamera(uv,camera);const surfaceHits=probe.intersectObjects(pieces,true).filter(h=>h.object.visible),anchor=surfaceHits.length?surfaceHits[0].point.clone():probe.ray.intersectPlane(new T.Plane(new T.Vector3(0,1,0),-.124),new T.Vector3());const zoomPlane=anchor?new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),anchor):null;zoomView(viewScale*Math.exp(clamp(e.deltaY,-150,150)*.0015));if(anchor&&zoomPlane){probe.setFromCamera(uv,camera);const after=probe.ray.intersectPlane(zoomPlane,new T.Vector3());if(after){const delta=anchor.clone().sub(after);camera.position.add(delta);cameraPan.add(delta);camera.updateMatrixWorld(true)}}project(e)},{passive:false});
+scene.add(new T.HemisphereLight('#dbe3ee','#514137',.95));const key=new T.DirectionalLight('#ffdfb7',2.05);key.position.set(-3,7,-4);key.castShadow=true;key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-5,right:5,top:5,bottom:-5,near:.1,far:20});key.shadow.normalBias=.012;key.shadow.bias=-.00012;key.shadow.radius=3;scene.add(key);const fill=new T.DirectionalLight('#a4c0e0',.45);fill.position.set(4,5,2);scene.add(fill);
+const envScene=new T.Scene();envScene.background=new T.Color('#666970');function lightPanel(w,h,x,y,z,col,rx,ry){const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:col,side:T.DoubleSide}));m.position.set(x,y,z);m.rotation.set(rx,ry,0);envScene.add(m)}lightPanel(6,5,-4,4,0,'#dfd7ca',0,Math.PI/2);lightPanel(4,4,0,6,0,'#d5dbe3',Math.PI/2,0);lightPanel(2,5,4,2,0,'#434951',0,Math.PI/2);const pm=new T.PMREMGenerator(renderer);scene.environment=pm.fromScene(envScene,.15).texture;pm.dispose();
+function texture(kind){const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d'),img=ctx.createImageData(512,512);for(let y=0;y<512;y++)for(let x=0;x<512;x++){let n=(rand()-.5)*12,g=Math.sin(y*.19+Math.sin(x*.014)*2.5)*8+Math.sin(y*.72)*3;const v=kind==='wood'?[103+g+n,73+g*.7+n,55+g*.5+n]:kind==='paper'?[165+n,158+n,148+n]:kind==='food'?[211+n*.7,207+n*.7,202+n*.7]:[80+n,92+n,98+n];const i=(y*512+x)*4;for(let k=0;k<3;k++)img.data[i+k]=v[k];img.data[i+3]=255}ctx.putImageData(img,0,0);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return t}
+const woodTx=texture('wood'),stoneTx=texture('stone'),paperTx=texture('paper'),foodTx=texture('food');
+const mat=(color,roughness=.7,metalness=0,extra={})=>new T.MeshStandardMaterial({color,roughness,metalness,...extra});const wood=mat('#ffffff',.65,0,{map:woodTx}),steel=mat('#9fa8b5',.28,.9),paper=mat('#e0d8cd',.96,0,{map:paperTx}),foodMat=new T.MeshPhysicalMaterial({color:'#fff0dc',map:foodTx,bumpMap:foodTx,bumpScale:.005,roughness:.72,sheen:.35,sheenColor:new T.Color('#f0d5c0'),sheenRoughness:.9});
+function box(w,h,d,m,x=0,y=0,z=0,parent=scene){const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);return o}function cyl(r,h,m,x=0,y=0,z=0,parent=scene){const o=new T.Mesh(new T.CylinderGeometry(r,r,h,64),m);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;parent.add(o);return o}function ring(r,t,m,x,y,z,parent=scene){const o=new T.Mesh(new T.TorusGeometry(r,t,12,80),m);o.rotation.x=-Math.PI/2;o.position.set(x,y,z);o.castShadow=true;parent.add(o);return o}
+box(30,.2,30,wood,0,-.17);box(4.8,.07,3.65,mat('#ffffff',.88,0,{map:stoneTx}),0,-.025);const towel=box(.95,.02,1.5,mat('#8d7375',1),-2.95,0,.6);towel.rotation.y=.14;for(let i=0;i<24;i++)box(.9,.002,.009,mat('#aa9595',1),-2.95,.012,.6+(i-12)*.055);
+// Decorative pantry, kept darker than the food.
+for(let i=0;i<2;i++){cyl(.24,.45,mat(i?'#b9a792':'#abbbb4',.55),-2.4+i*.65,.23,-2.3);cyl(.255,.055,wood,-2.4+i*.65,.49,-2.3);ring(.18,.009,steel,-2.4+i*.65,.523,-2.3)}
+const bowl=new T.Group();scene.add(bowl);const bowlProfile=[[0,.06],[.36,.06],[.58,.16],[.79,.47],[.88,.66],[.87,.69],[.84,.65],[.75,.48],[.54,.23],[.34,.12],[0,.12]];const bowlBody=new T.Mesh(new T.LatheGeometry(bowlProfile.map(p=>new T.Vector2(...p)),96),steel);bowl.add(bowlBody);bowlBody.castShadow=bowlBody.receiveShadow=true;ring(.865,.014,steel,0,.674,0,bowl);
+const foamMaterial=new T.MeshPhysicalMaterial({color:'#e9e0c9',map:foodTx,bumpMap:foodTx,bumpScale:.008,roughness:.35,clearcoat:.15});const foam=new T.Mesh(new T.SphereGeometry(.72,64,32),foamMaterial);foam.position.y=.22;foam.scale.set(1,.08,1);foam.receiveShadow=true;bowl.add(foam);const foamBase=foam.geometry.attributes.position.array.slice();
+const foamBubbles=new T.Group();bowl.add(foamBubbles);const bubbleGeo=new T.SphereGeometry(1,10,7);for(let i=0;i<60;i++){const a=rand()*TAU,r=Math.sqrt(rand())*.65,o=new T.Mesh(bubbleGeo,foamMaterial);o.position.set(Math.cos(a)*r,.3,Math.sin(a)*r);o.scale.setScalar(.015+rand()*.03);foamBubbles.add(o)}
+const whisk=new T.Group();scene.add(whisk);const wire=mat('#a8afba',.22,.94);for(let i=0;i<8;i++){const a=i/8*TAU,pts=[];for(let j=0;j<=28;j++){const t=j/28;pts.push(new T.Vector3(Math.cos(a)*Math.sin(t*Math.PI)*.19,-t*.42,Math.sin(a)*Math.sin(t*Math.PI)*.19))}const o=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),28,.009,5,false),wire);whisk.add(o)}cyl(.065,.42,wood,0,.21,0,whisk);whisk.position.set(.1,.82,.1);
+// Step 2: a high-speed hand mixer, a tiltable bowl and two draggable sugar cups.
+const handMixer=new T.Group();scene.add(handMixer);
+const mixerShell=mat('#91677a',.34),mixerTrim=mat('#353b44',.43);
+box(.44,.25,.55,mixerShell,0,.24,.14,handMixer);box(.31,.08,.21,mixerTrim,0,.405,.16,handMixer);box(.31,.14,.055,mixerShell,0,.45,.04,handMixer);box(.31,.14,.055,mixerShell,0,.45,.28,handMixer);
+const mixerBeaters=[];for(const x of [-.115,.115]){const rotor=new T.Group();rotor.position.x=x;handMixer.add(rotor);cyl(.012,.28,steel,0,-.01,0,rotor);for(let i=0;i<4;i++){const a=i*Math.PI/2,pts=[];for(let j=0;j<=24;j++){const u=j/24;pts.push(new T.Vector3(Math.cos(a)*Math.sin(u*Math.PI)*.085,-.12-u*.20,Math.sin(a)*Math.sin(u*Math.PI)*.085))}rotor.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),24,.008,5,false),steel))}mixerBeaters.push(rotor)}
+const sugarCups=[],whipDrag={kind:null,cup:null,dx:0,dz:0};let bowlTilt=0,whipReady=false;
+for(let i=0;i<2;i++){const cup=new T.Group();scene.add(cup);cup.position.set((i-.5)*.92,0,-1.28);cyl(.23,.11,mat('#8b9caa',.28,.25),0,.08,0,cup);cyl(.205,.035,mat('#ded7ca',.96,0,{bumpMap:foodTx,bumpScale:.006}),0,.15,0,cup);const c=document.createElement('canvas');c.width=384;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#e9dfd0';ctx.font='28px system-ui';ctx.textAlign='center';ctx.fillText(`グラニュー糖 15g · ${i+1}回目`,192,60);const tx=new T.CanvasTexture(c);tx.colorSpace=T.SRGBColorSpace;const label=new T.Mesh(new T.PlaneGeometry(.90,.225),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));label.rotation.x=-Math.PI/2;label.position.set(0,.012,-.36);label.visible=false;cup.add(label);cup.userData={index:i,used:false,homeX:cup.position.x};sugarCups.push(cup)}
+const stiffPeak=new T.Mesh(new T.ConeGeometry(.105,.28,32),foamMaterial);stiffPeak.position.set(.16,.77,.03);stiffPeak.rotation.z=-.13;bowl.add(stiffPeak);stiffPeak.visible=false;
+function resetWhip(){mixAngle=0;mixTurn=0;bowlTilt=0;whipReady=false;sugar=0;whipDrag.kind=null;whipDrag.cup=null;bowl.rotation.set(0,0,0);stiffPeak.visible=false;for(const c of sugarCups){c.userData.used=false;c.visible=true;c.position.set(c.userData.homeX,0,-1.28)}}
+function beginWhipDrag(){for(const c of sugarCups){if(!c.userData.used&&Math.hypot(ptr.x-c.position.x,ptr.z-c.position.z)<.27){const waiting=sugar===0?progress>=.32:sugar===1&&progress>=.66;if(!waiting){toast('先にボウルを傾け、高速で白っぽくふんわり泡立てましょう');return}if(c.userData.index!==sugar){toast('1回目、2回目の順に加えましょう');return}whipDrag.kind='sugar';whipDrag.cup=c;whipDrag.dx=c.position.x-ptr.x;whipDrag.dz=c.position.z-ptr.z;return}}const r=Math.hypot(ptr.x,ptr.z);if(r>=.67&&r<1.03){whipDrag.kind='tilt';bowlTilt=clamp(ptr.x*.42,-.28,.28);if(Math.abs(bowlTilt)<.10)bowlTilt=.20;toast('ボウルを傾けました。内側をドラッグして高速で泡立てましょう')}else if(r<.67){whipDrag.kind='mix';if(Math.abs(bowlTilt)<.10)toast('まずボウルの縁を左右にドラッグして傾けましょう')}}
+function moveWhipDrag(){if(whipDrag.kind==='sugar'){whipDrag.cup.position.set(clamp(ptr.x+whipDrag.dx,-1.9,1.9),.60,clamp(ptr.z+whipDrag.dz,-1.6,.9))}else if(whipDrag.kind==='tilt'){bowlTilt=clamp(ptr.x*.42,-.28,.28)}}
+function cancelWhipDrag(){if(whipDrag.cup&&!whipDrag.cup.userData.used)whipDrag.cup.position.set(whipDrag.cup.userData.homeX,0,-1.28);whipDrag.kind=null;whipDrag.cup=null}
+function dropWhipDrag(){if(whipDrag.kind==='sugar'){const c=whipDrag.cup;if(Math.hypot(c.position.x,c.position.z)<.65){c.userData.used=true;c.visible=false;sugar++;tone(720);toast(`グラニュー糖15gを加えました（${sugar}回目）。高速でしっかり混ぜましょう`)}else toast('ボウルの中まで運んで離してください')}cancelWhipDrag()}
+const saucepan=new T.Group();scene.add(saucepan);cyl(.68,.1,mat('#2d3139',.5),0,.08,0,saucepan);const panWall=new T.Mesh(new T.LatheGeometry([[0,.12],[.54,.12],[.62,.16],[.62,.425],[.597,.425],[.592,.175],[.52,.145],[0,.145]].map(p=>new T.Vector2(...p)),80),steel);panWall.castShadow=panWall.receiveShadow=true;saucepan.add(panWall);cyl(.58,.012,mat('#815032',.19),0,.43,0,saucepan);ring(.615,.018,steel,0,.433,0,saucepan);box(.16,.08,.85,mat('#353039',.5),0,.31,1,saucepan);const syrupBubbles=new T.Group();saucepan.add(syrupBubbles);for(let i=0;i<25;i++){const a=rand()*TAU,r=rand()*.5,o=new T.Mesh(bubbleGeo,mat('#d29b59',.18));o.position.set(Math.cos(a)*r,.45,Math.sin(a)*r);o.scale.setScalar(.015+rand()*.03);syrupBubbles.add(o)}
+// Syrup station: ingredient cups, burner, enlarged rotary gas control.
+const syrupStation=new T.Group();scene.add(syrupStation);
+box(1.66,.14,1.54,mat('#454b53',.4,.55),0,.06,0,syrupStation);
+cyl(.70,.035,mat('#242932',.6),0,.15,0,syrupStation);
+for(const a of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const support=box(.17,.08,1.34,steel,0,.19,0,syrupStation);support.rotation.y=a}
+const flameRing=ring(.48,.045,new T.MeshBasicMaterial({color:'#478df0',transparent:true,opacity:.85}),0,.23,0,syrupStation);
+const flameJets=[];for(let i=0;i<20;i++){const a=i/20*TAU;const jet=new T.Mesh(new T.ConeGeometry(.031,.12,10),new T.MeshBasicMaterial({color:i%2?'#61c9ef':'#416ddb',transparent:true,opacity:.85}));jet.position.set(Math.cos(a)*.50,.24,Math.sin(a)*.50);syrupStation.add(jet);flameJets.push(jet)}
+function syrupText(text,x,z,w=1.05){const c=document.createElement('canvas');c.width=512;c.height=100;const ctx=c.getContext('2d');ctx.fillStyle='#f4e6d1';ctx.font='500 34px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,256,50);const tx=new T.CanvasTexture(c);tx.colorSpace=T.SRGBColorSpace;const o=new T.Mesh(new T.PlaneGeometry(w,w*100/512),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));o.rotation.x=-Math.PI/2;o.position.set(x,.015,z);o.visible=false;syrupStation.add(o);return o}
+const syrupIngredients=[];const ingredientDefs=[['水 30g','#87b6cb'],['水あめ 10g','#b58b48'],['グラニュー糖 30g','#d9d1c2']];
+for(let i=0;i<3;i++){const cup=new T.Group();cup.position.set((i-1)*.91,0,-1.38);syrupStation.add(cup);const ceramic=mat('#777e8c',.3,.25);prepIngredientCup(cup,ceramic,i);cup.userData={index:i,used:false,homeX:cup.position.x};syrupIngredients.push(cup);syrupText(ingredientDefs[i][0],cup.position.x,-1.85,.86)}
+function prepIngredientCup(cup,material,i){const profile=[[0,.03],[.14,.03],[.23,.19],[.225,.23],[.20,.22],[.18,.11],[0,.09]];const mesh=new T.Mesh(new T.LatheGeometry(profile.map(p=>new T.Vector2(...p)),48),material);mesh.castShadow=mesh.receiveShadow=true;cup.add(mesh);cyl(.181,.012,mat(ingredientDefs[i][1],i===2?.95:.2,0,{transparent:i!==2,opacity:i===0?.8:1}),0,.16,0,cup);ring(.222,.008,steel,0,.23,0,cup)}
+const dial=new T.Group();dial.position.set(1.48,0,.45);syrupStation.add(dial);cyl(.39,.07,mat('#262d38',.45),0,.06,0,dial);ring(.38,.012,steel,0,.10,0,dial);const dialKnob=new T.Group();dial.add(dialKnob);cyl(.28,.12,mat('#69717c',.3,.7),0,.15,0,dialKnob);box(.042,.016,.16,mat('#f0c297',.5),0,.219,-.16,dialKnob);
+for(let i=0;i<=8;i++){const a=(-135+i*270/8)*Math.PI/180;const tick=box(.014,.008,.045,mat(i===8?'#dc8d62':'#bdc5ca'),Math.sin(a)*.35,.108,-Math.cos(a)*.35,dial);tick.rotation.y=-a}
+syrupText('火力ダイヤル',1.48,1.04,.95);syrupText('切 ← 回して調節 → 強',1.48,1.29,1.22);syrupText('手前の持ち手をドラッグして傾ける',0,1.62,1.86);
+const syrupDrag={kind:null,cup:null,dx:0,dz:0,lastAngle:0};let syrupPower=0,syrupBlend=0,panTiltX=0,panTiltZ=0;
+const panLiquid=saucepan.children[2];panLiquid.material=new T.MeshPhysicalMaterial({color:'#b6a17c',roughness:.20,transparent:true,opacity:.88,clearcoat:.8});
+// Material-specific additions remain visible inside the open saucepan.
+const syrupAddition=new T.Group();saucepan.add(syrupAddition);
+const sugarPile=new T.Mesh(new T.ConeGeometry(.24,.11,40),mat('#f2e6cc',.98,0,{bumpMap:foodTx,bumpScale:.012}));sugarPile.visible=false;syrupAddition.add(sugarPile);
+const amberSwirl=ring(.25,.032,new T.MeshPhysicalMaterial({color:'#b87522',roughness:.18,transparent:true,opacity:.8,clearcoat:1}),0,.43,0,syrupAddition);amberSwirl.scale.z=.65;amberSwirl.visible=false;
+const additionDrops=[];for(let i=0;i<36;i++){const drop=new T.Mesh(new T.SphereGeometry(1,8,6),mat('#f1dfb8',.4));drop.visible=false;syrupAddition.add(drop);additionDrops.push(drop)}
+let additionTime=0,additionKind=-1,sugarDissolve=0,amberDissolve=0;
+function showSyrupAddition(index){if(index===0)kitchenLiquidSE('water');else if(index===1)kitchenLiquidSE('plop');additionTime=1.25;additionKind=index;if(index===2){sugarDissolve=1;sugarPile.visible=true}if(index===1){amberDissolve=1;amberSwirl.visible=true}for(let i=0;i<additionDrops.length;i++){const d=additionDrops[i];d.userData.phase=i/additionDrops.length;d.material.color.set(ingredientDefs[index][1]);d.material.roughness=index===2?.95:.15;d.visible=true;d.scale.set(index===2?.012:.019,index===1?.055:index===2?.014:.033,index===2?.012:.019)}}
+function syrupAngle(){return Math.atan2(ptr.x-dial.position.x,-(ptr.z-dial.position.z))}
+function adjustSyrupDial(){const a=syrupAngle();let d=a-syrupDrag.lastAngle;if(d>Math.PI)d-=TAU;if(d< -Math.PI)d+=TAU;syrupPower=clamp(syrupPower+d/(Math.PI*1.5));syrupDrag.lastAngle=a;dialKnob.rotation.y=-(mix(-135,135,syrupPower))*Math.PI/180}
+function resetSyrup(){additionTime=0;additionKind=-1;sugarDissolve=amberDissolve=0;sugarPile.visible=amberSwirl.visible=false;additionDrops.forEach(d=>d.visible=false);heat=22;syrupPower=0;syrupBlend=0;panTiltX=panTiltZ=0;syrupDrag.kind=null;syrupDrag.cup=null;saucepan.rotation.set(0,0,0);saucepan.position.y=.20;dialKnob.rotation.y=135*Math.PI/180;syrupIngredients.forEach(c=>{c.userData.used=false;c.visible=true;c.position.set(c.userData.homeX,0,-1.38)});panLiquid.visible=false;syrupBubbles.visible=false}
+function beginSyrupDrag(){for(const c of syrupIngredients){if(!c.userData.used&&Math.hypot(ptr.x-c.position.x,ptr.z-c.position.z)<.27){syrupDrag.kind='ingredient';syrupDrag.cup=c;syrupDrag.dx=c.position.x-ptr.x;syrupDrag.dz=c.position.z-ptr.z;return}}if(Math.hypot(ptr.x-dial.position.x,ptr.z-dial.position.z)<.43){syrupDrag.kind='dial';syrupDrag.lastAngle=syrupAngle();toast('ダイヤルを時計回りに回すと火力が上がります');return}if(ptr.z>.67&&ptr.z<1.47&&Math.abs(ptr.x)<.23){syrupDrag.kind='handle';syrupDrag.dx=ptr.x;syrupDrag.dz=ptr.z;toast('持ち手をゆっくり動かして、鍋を傾けて混ぜましょう')}}
+function moveSyrupDrag(){if(syrupDrag.kind==='ingredient'){const c=syrupDrag.cup;c.position.set(clamp(ptr.x+syrupDrag.dx,-1.8,1.8),.85,clamp(ptr.z+syrupDrag.dz,-1.65,.8))}else if(syrupDrag.kind==='dial'){if(Math.hypot(ptr.x-dial.position.x,ptr.z-dial.position.z)>.09)adjustSyrupDial()}else if(syrupDrag.kind==='handle'){panTiltX=clamp((ptr.z-syrupDrag.dz)*.42,-.20,.20);panTiltZ=clamp(-(ptr.x-syrupDrag.dx)*.38,-.20,.20)}}
+function cancelSyrupDrag(){if(syrupDrag.cup&&!syrupDrag.cup.userData.used)syrupDrag.cup.position.set(syrupDrag.cup.userData.homeX,0,-1.38);syrupDrag.kind=null;syrupDrag.cup=null;panTiltX=panTiltZ=0}
+function dropSyrupDrag(){if(syrupDrag.kind==='ingredient'){const c=syrupDrag.cup;if(Math.hypot(c.position.x,c.position.z)<.57){c.userData.used=true;c.visible=false;panLiquid.visible=true;showSyrupAddition(c.userData.index);tone(650);toast(ingredientDefs[c.userData.index][0]+'を入れました。'+(syrupIngredients.every(q=>q.userData.used)?'ダイヤルで火をつけ、持ち手を動かして混ぜましょう':'残りの材料も鍋へ入れましょう'))}else toast('中央の鍋の中で離してください')}cancelSyrupDrag()}
+const tray=new T.Group();scene.add(tray);box(3.75,.07,2.65,steel,0,.05,0,tray);box(3.56,.012,2.46,paper,0,.094,0,tray);for(const z of [-1.3,1.3])box(3.76,.11,.045,steel,0,.13,z,tray);for(const x of [-1.85,1.85])box(.045,.11,2.6,steel,x,.13,0,tray);
+// A continuous opaque starch bed hides the paper; grains add surface texture.
+const starchCanvas=document.createElement('canvas');starchCanvas.width=starchCanvas.height=512;const starchCtx=starchCanvas.getContext('2d'),starchImage=starchCtx.createImageData(512,512);for(let i=0;i<512*512;i++){const v=208+(rand()-.5)*18;starchImage.data.set([v+5,v+2,v-4,255],i*4)}starchCtx.putImageData(starchImage,0,0);const starchTexture=new T.CanvasTexture(starchCanvas);starchTexture.colorSpace=T.SRGBColorSpace;starchTexture.wrapS=starchTexture.wrapT=T.RepeatWrapping;starchTexture.repeat.set(4,3);starchTexture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+const starchBed=box(3.53,.022,2.43,mat('#eee8de',1,0,{map:starchTexture,bumpMap:starchTexture,bumpScale:.0012}),0,.108,0,tray);starchBed.receiveShadow=true;
+const powderMat=mat('#ded9d1',1);const powder=new T.InstancedMesh(new T.IcosahedronGeometry(.0022,0),powderMat,1600);tray.add(powder);powder.count=0;let grains=0;const matrix=new T.Matrix4();function addPowder(x,y,z){if(grains>=1600)return;matrix.makeTranslation(x,y,z);powder.setMatrixAt(grains++,matrix);powder.count=grains;powder.instanceMatrix.needsUpdate=true}function basePowder(){grains=0;powder.count=0;powder.material.opacity=1;powder.material.transparent=false;for(let i=0;i<850;i++)addPowder((rand()-.5)*3.49,.124,(rand()-.5)*2.39)}basePowder();
+const plate=new T.Group();scene.add(plate);const ceramic=mat('#59868a',.25);cyl(1.12,.085,ceramic,0,.06,0,plate);ring(1.035,.055,ceramic,0,.11,0,plate);ring(.89,.008,mat('#bd9b64',.36,.6),0,.115,0,plate);
+const bag=new T.Group();scene.add(bag);const bagBody=new T.Mesh(new T.ConeGeometry(.2,.58,32),mat('#cfc9ba',.76));bagBody.rotation.z=Math.PI;bagBody.position.y=.37;bag.add(bagBody);const nozzle=new T.Mesh(new T.ConeGeometry(.057,.16,32),steel);nozzle.rotation.z=Math.PI;nozzle.position.y=.07;bag.add(nozzle);
+const brush=new T.Group();scene.add(brush);box(.06,.04,.47,wood,0,0,.2,brush);box(.19,.07,.17,mat('#ad9c7d',.93),0,-.02,-.1,brush);for(let i=0;i<14;i++)box(.006,.025,.18,mat('#c8b995',1),(i-6.5)*.012,-.04,-.16,brush);
+const shaker=new T.Group();scene.add(shaker);cyl(.16,.26,steel,0,.15,0,shaker);cyl(.155,.018,mat('#8d939c',.8,.6),0,.29,0,shaker);for(let i=0;i<12;i++){const a=i*2.4,r=Math.sqrt(i/12)*.12;cyl(.012,.002,mat('#272c33'),Math.cos(a)*r,.301,Math.sin(a)*r,shaker)}
+const gelatin=new T.Group();scene.add(gelatin);cyl(.42,.08,mat('#728e98',.25,.2),0,.08,0,gelatin);for(let i=0;i<3;i++){const o=box(.4,.008,.29,mat('#d2b77d',.2,0,{transparent:true,opacity:.7}),i*.025,.13+i*.015,i*.025,gelatin);o.rotation.y=i*.1}
+// Step 1: three draggable sheets, a cold bath, a small bowl and a hot bath.
+const prep=new T.Group();scene.add(prep);
+const coldBath=new T.Group(),hotBath=new T.Group(),smallBowl=new T.Group();prep.add(coldBath,hotBath,smallBowl);coldBath.position.x=-1.48;hotBath.position.x=1.48;
+const bathCeramic=mat('#49666f',.32),smallCeramic=mat('#b59b85',.38);
+function prepBowl(parent,r,depth,material){const profile=[[0,.035],[r*.5,.035],[r*.83,depth*.40],[r,depth],[r*.98,depth+.022],[r*.91,depth*.91],[r*.74,depth*.38],[r*.45,.09],[0,.09]];const mesh=new T.Mesh(new T.LatheGeometry(profile.map(p=>new T.Vector2(...p)),64),material);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);ring(r*.985,.014,material,0,depth+.006,0,parent)}
+prepBowl(coldBath,.64,.38,bathCeramic);prepBowl(hotBath,.64,.38,bathCeramic);prepBowl(smallBowl,.43,.25,smallCeramic);
+const coldWater=cyl(.55,.012,new T.MeshPhysicalMaterial({color:'#779fae',roughness:.18,metalness:.12,transparent:true,opacity:.84,clearcoat:1}),0,.295,0,coldBath);
+const hotWater=cyl(.55,.012,new T.MeshPhysicalMaterial({color:'#9dada9',roughness:.22,metalness:.1,transparent:true,opacity:.86,clearcoat:1}),0,.295,0,hotBath);
+const meltedGelatin=cyl(.32,.012,new T.MeshPhysicalMaterial({color:'#c2a56b',roughness:.2,transparent:true,opacity:.12,clearcoat:.7}),0,.115,0,smallBowl);meltedGelatin.visible=false;
+// A small teaspoon follows the pointer while stirring the floating bowl.
+const prepSpoon=new T.Group();prep.add(prepSpoon);prepSpoon.visible=false;
+const spoonCup=new T.Mesh(new T.SphereGeometry(1,28,16),steel);spoonCup.scale.set(.072,.014,.105);spoonCup.castShadow=true;prepSpoon.add(spoonCup);
+const spoonHandle=new T.Mesh(new T.CapsuleGeometry(.017,.32,6,12),steel);spoonHandle.rotation.x=Math.PI/2;spoonHandle.position.set(0,.018,.245);spoonHandle.castShadow=true;prepSpoon.add(spoonHandle);
+let prepStirDistance=0,soakHandDistance=0;
+const soakRipples=[];for(let i=0;i<3;i++){const ripple=ring(.20,.005,mat('#b6d5df',.25,0,{transparent:true,opacity:0,depthWrite:false}),0,.312,0,coldBath);ripple.visible=false;soakRipples.push(ripple)}
+function inColdBath(){return ptr.valid&&Math.hypot(ptr.x+1.48,ptr.z)<.55}
+function updateHandCursor(){canvas.style.cursor=stage===0&&!bathing&&inColdBath()?(ptr.down?'grabbing':'grab'):'default'}
+function inHotSmallBowl(){return bathing&&ptr.valid&&Math.hypot(ptr.x-smallBowl.position.x,ptr.z-smallBowl.position.z)<.40}
+const prepSheets=[];const prepDrag={kind:null,sheet:null,dx:0,dz:0};let bathing=false,meltAmount=0;
+for(let i=0;i<3;i++){const sheet=box(.23,.009,.34,new T.MeshPhysicalMaterial({color:'#d6bd80',roughness:.3,transparent:true,opacity:.78,clearcoat:.4}),-1.48+(i-1)*.25,.318,0,prep);sheet.userData={soak:0,inSmall:false,index:i};sheet.rotation.y=(i-1)*.08;prepSheets.push(sheet)}
+function prepLabel(text,x){const c=document.createElement('canvas');c.width=384;c.height=96;const ctx=c.getContext('2d');ctx.fillStyle='#e9dfd0';ctx.font='500 35px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,192,48);const tx=new T.CanvasTexture(c);tx.colorSpace=T.SRGBColorSpace;const mesh=new T.Mesh(new T.PlaneGeometry(.98,.245),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));mesh.rotation.x=-Math.PI/2;mesh.position.set(x,.012,.86);mesh.visible=false;prep.add(mesh)}
+prepLabel('冷水',-1.48);prepLabel('小さいボウル',0);prepLabel('お湯・湯煎',1.48);
+const steam=new T.Group();hotBath.add(steam);for(let i=0;i<8;i++){const puff=new T.Mesh(new T.SphereGeometry(1,10,8),new T.MeshBasicMaterial({color:'#d4ddd8',transparent:true,opacity:.07,depthWrite:false}));steam.add(puff)}
+function resetPrep(){if(smallBowl.parent!==prep)prep.attach(smallBowl);smallBowl.visible=true;meltedGelatin.visible=false; // Start with a genuinely empty transfer bowl; sheets remain in cold water.
+bathing=false;meltAmount=0;prepStirDistance=0;soakHandDistance=0;soakRipples.forEach(r=>r.visible=false);prepSpoon.visible=false;smallBowl.rotation.set(0,0,0);prepDrag.kind=null;prepDrag.sheet=null;smallBowl.position.set(0,0,0);meltedGelatin.scale.set(1,1,1);meltedGelatin.material.opacity=.12;prepSheets.forEach((s,i)=>{prep.add(s);s.position.set(-1.48+(i-1)*.25,.318,0);s.rotation.set(0,(i-1)*.08,0);s.scale.set(1,1,1);s.visible=true;s.material.opacity=.78;s.userData.soak=0;s.userData.inSmall=false})}
+function restorePrepDrag(){if(prepDrag.kind==='sheet'){const s=prepDrag.sheet,i=s.userData.index;prep.attach(s);s.position.set(-1.48+(i-1)*.25,.318,0)}else if(prepDrag.kind==='bowl'){smallBowl.position.set(0,0,0)}prepDrag.kind=null;prepDrag.sheet=null}
+function beginPrepDrag(){if(bathing)return;ray.setFromCamera(ndc,camera);const hits=ray.intersectObjects(prepSheets.filter(s=>!s.userData.inSmall),false);if(hits.length){const s=hits[0].object;if(s.userData.soak<1){toast('冷水の中を押したままやさしく動かして、ゼラチンを水に浸しましょう');return}prepDrag.kind='sheet';prepDrag.sheet=s;prepDrag.dx=s.position.x-ptr.x;prepDrag.dz=s.position.z-ptr.z;s.position.y=.63;return}if(Math.hypot(ptr.x-smallBowl.position.x,ptr.z-smallBowl.position.z)<.43){if(!prepSheets.every(s=>s.userData.inSmall)){toast('ふやけたゼラチン3枚を、この小さいボウルに入れましょう');return}prepDrag.kind='bowl';prepDrag.dx=smallBowl.position.x-ptr.x;prepDrag.dz=smallBowl.position.z-ptr.z;smallBowl.position.y=.48}}
+function movePrepDrag(){if(!prepDrag.kind)return;const o=prepDrag.kind==='sheet'?prepDrag.sheet:smallBowl;o.position.x=clamp(ptr.x+prepDrag.dx,-2.12,2.12);o.position.z=clamp(ptr.z+prepDrag.dz,-.67,.67)}
+function dropPrepDrag(){if(prepDrag.kind==='sheet'){const s=prepDrag.sheet;if(Math.hypot(s.position.x-smallBowl.position.x,s.position.z-smallBowl.position.z)<.39){smallBowl.attach(s);const n=prepSheets.filter(q=>q.userData.inSmall).length;s.position.set((n-1)*.045,.14+n*.012,0);s.rotation.set(0,(n-1)*.24,0);s.userData.inSmall=true;meltedGelatin.visible=false;prepDrag.kind=null;prepDrag.sheet=null;tone(610);toast(prepSheets.every(q=>q.userData.inSmall)?'3枚そろいました。小さいボウルを右のお湯へドラッグ！':'小さいボウルに入れました')}else{restorePrepDrag();toast('真ん中の小さいボウルの中で離してください')}}else if(prepDrag.kind==='bowl'){if(Math.hypot(smallBowl.position.x-1.48,smallBowl.position.z)<.46){smallBowl.position.set(1.48,.20,0);bathing=true;prepDrag.kind=null;tone(720);toast('小さいボウルの中を押したまま動かして、スプーンで混ぜましょう')}else{restorePrepDrag();toast('右のお湯のボウルの上で離してください')}}}
+const stream=new T.Mesh(new T.CylinderGeometry(.02,.035,.6,14),mat('#dbaf6c',.2));scene.add(stream);stream.visible=false;
+// Cream is an opaque solid, including close-up views and the ends of strokes.
+foodMat.transparent=false;foodMat.opacity=1;foodMat.depthWrite=true;foodMat.side=T.FrontSide;
+const pieces=[];let activePiece=null,selected=null,color='#f0cfce',shape='round',size=1;
+// Step 6: freehand piping, real dish colours and a local orbit camera.
+let pipingTool=null,pendingDish=null,loadedDish=null,pipeTarget=null,pipeLast=null,pipeNodes=0,orbiting=false,orbitId=null,orbitX=0,orbitY=0,orbitYaw=0,orbitPitch=.035;
+let pipeThickness=1,pipeHeight=0,pipeDrawMode='outline';
+// Lightweight outline modelling: one temporary line, then one rounded solid.
+let outlineStroke=null;
+const outlinePlane=new T.Plane(new T.Vector3(0,1,0),-.124);
+function outlinePoint(){ray.setFromCamera(ndc,camera);const p=new T.Vector3();return ray.ray.intersectPlane(outlinePlane,p)&&Math.abs(p.x)<1.72&&Math.abs(p.z)<1.16?p:null;}
+function beginOutline(){
+ if(!pipingTool){toast('左の小皿から絞り袋を選んでください');return}
+ if(pipeThickness<=0)return;
+ const p=outlinePoint();if(!p)return;
+ const geometry=new T.BufferGeometry();const material=new T.LineBasicMaterial({color,depthTest:false});
+ const line=new T.Line(geometry,material);line.renderOrder=5;tray.add(line);
+ outlineStroke={points:[p.clone()],line,color,thickness:pipeThickness,last:0};
+ toast('平面上で輪郭を囲んでください。離すと閉じて、厚みのある本体になります');
+}
+function updateOutline(now){
+ const s=outlineStroke;if(!s||now-s.last<33)return;
+ s.last=now;const p=outlinePoint();if(!p||s.points[s.points.length-1].distanceToSquared(p)<.0001)return;
+ if(s.points.length>=512)s.points=s.points.filter((_,i)=>i===0||i===s.points.length-1||i%2===0);
+ s.points.push(p.clone());
+ const g=new T.BufferGeometry().setFromPoints([...s.points,s.points[0]]);s.line.geometry.dispose();s.line.geometry=g;
+}
+function finishOutline(cancel=false){
+ const s=outlineStroke;if(!s)return;outlineStroke=null;
+ s.line.parent?.remove(s.line);s.line.geometry.dispose();s.line.material.dispose();
+ if(cancel||s.points.length<3)return;
+ const points=s.points.map(p=>new T.Vector2(p.x,-p.z));
+ // Reject crossed contours rather than create an invalid filled solid.
+ const cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+ for(let i=0;i<points.length;i++)for(let j=i+2;j<points.length;j++){
+  if(i===0&&j===points.length-1)continue;
+  const a=points[i],b=points[(i+1)%points.length],c=points[j],d=points[(j+1)%points.length];
+  if(cross(a,b,c)*cross(a,b,d)<-1e-12&&cross(c,d,a)*cross(c,d,b)<-1e-12){toast('輪郭が交差しています。交差しないように囲んでください');return;}
+ }
+ if(Math.abs(T.ShapeUtils.area(points))<.001){toast('少し大きく囲んでください');return;}
+ const center=new T.Vector2();for(const p of points)center.add(p);center.divideScalar(points.length);
+ const shape=new T.Shape(points.map(p=>p.clone().sub(center)));shape.closePath();
+ const thickness=Math.max(.025,.14*s.thickness);
+ const bounds=new T.Box2().setFromPoints(points),extent=bounds.getSize(new T.Vector2());
+ const bevel=Math.max(.001,Math.min(.035,thickness*.22,extent.x*.08,extent.y*.08));
+ const geometry=new T.ExtrudeGeometry(shape,{depth:thickness,steps:1,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,curveSegments:8});
+ geometry.rotateX(-Math.PI/2);geometry.computeBoundingSphere();
+ const material=foodMat.clone();material.color.set(s.color);
+ const mesh=new T.Mesh(geometry,material);mesh.userData.pipingRole='body';mesh.castShadow=mesh.receiveShadow=true;
+ const piece=new T.Group();piece.position.set(center.x,.124+bevel,-center.y);piece.add(mesh);tray.add(piece);
+ piece.userData={size:1,fill:1,kind:'outline',material,clean:0,plated:false,x:piece.position.x,z:piece.position.z};pieces.push(piece);
+ recordPipeHistory({target:piece,created:true,count:0,scales:[]});
+ creamBodiesCache=null;creamBodiesFrame=-1;
+}
+
+let pipeStrokePlane=null;
+const pipePlaneNormal=new T.Vector3();
+const orbitPointerPivot=new T.Vector3();
+let orbitRadius=12;
+const orbitOffset=new T.Vector3();
+function visibleInScene(o){for(let n=o;n;n=n.parent)if(!n.visible)return false;return true}
+function setPointerOrbitPivot(){
+ // Centre an asymmetric orthographic frustum without changing the image.
+ // The UI-aware framing used to make orbiting appear to swing off-axis.
+ camera.updateMatrixWorld(true);
+ const cx=(camera.left+camera.right)*.5,cy=(camera.top+camera.bottom)*.5;
+ const shift=new T.Vector3(cx,cy,0).applyQuaternion(camera.quaternion);
+ camera.position.add(shift);cameraPan.add(shift);
+ camera.left-=cx;camera.right-=cx;camera.top-=cy;camera.bottom-=cy;
+ camera.updateProjectionMatrix();camera.updateMatrixWorld(true);
+ // Pick a stable pivot on the screen-centre ray, never underneath the mouse.
+ const forward=camera.getWorldDirection(new T.Vector3());
+ const distance=Math.abs(forward.y)>.001?(.2-camera.position.y)/forward.y:12;
+ orbitRadius=distance>.05?distance:12;
+ orbitPointerPivot.copy(camera.position).addScaledVector(forward,orbitRadius);
+ orbitOffset.copy(camera.position).sub(orbitPointerPivot);
+ orbitYaw=Math.atan2(orbitOffset.x,orbitOffset.z);
+ orbitPitch=Math.atan2(Math.hypot(orbitOffset.x,orbitOffset.z),orbitOffset.y);
+}
+function rotateAroundPointer(dx,dy){
+ // Fixed world-up orbit, proportional to drag distance, with safe pole limits.
+ const sensitivity=Math.PI/Math.max(400,canvas.clientHeight);
+ orbitYaw=T.MathUtils.euclideanModulo(orbitYaw-dx*sensitivity+Math.PI,TAU)-Math.PI;
+ orbitPitch=clamp(orbitPitch-dy*sensitivity,.001,Math.PI/2-.025);
+ const horizontal=Math.sin(orbitPitch)*orbitRadius;
+ camera.position.set(
+  orbitPointerPivot.x+Math.sin(orbitYaw)*horizontal,
+  orbitPointerPivot.y+Math.cos(orbitPitch)*orbitRadius,
+  orbitPointerPivot.z+Math.cos(orbitYaw)*horizontal
+ );
+ camera.up.set(0,1,0);
+ camera.lookAt(orbitPointerPivot);
+ camera.updateMatrixWorld(true);
+}
+function spacePiping(){return pipingTool==='bag'&&pipeDrawMode==='space'}
+const pipeHistory=[],pipeRedoHistory=[],cameraPan=new T.Vector3(),cameraKeys=new Set();
+function recordPipeHistory(entry){pipeRedoHistory.length=0;pipeHistory.push(entry);updatePipeHistoryButtons();}
+function updatePipeHistoryButtons(){if($('redoPipe'))$('redoPipe').disabled=!pipeRedoHistory.length;if($('undoPipe'))$('undoPipe').disabled=!pipeHistory.length;}
+function capturePipeState(){return pieces.map(p=>({piece:p,children:[...p.children],scales:p.children.map(o=>o.scale.clone())}));}
+function restorePipeState(snapshot){for(const p of pieces)p.parent?.remove(p);pieces.length=0;for(const state of snapshot){const p=state.piece;for(const child of [...p.children])p.remove(child);state.children.forEach((child,i)=>{p.add(child);child.scale.copy(state.scales[i]);child.visible=true;});p.userData.lastNode=null;tray.add(p);pieces.push(p);}}
+function redoPipe(){if(stage!==6||paused)return;release();const item=pipeRedoHistory.pop();if(!item){toast('やり直せる操作はありません');return;}removeCreamFusion();restorePipeState(item.after);pipeHistory.push(item.entry);liveFusionDirty=true;fusionPending=performance.now()+180;updatePipeHistoryButtons();toast('取り消した操作を元に戻しました');}
+function editableUI(){const el=document.activeElement;return !!(el&&(el.isContentEditable||el.tagName==='TEXTAREA'||el.tagName==='INPUT'&&!['range','button','checkbox','radio'].includes(el.type)))}
+window.addEventListener('keydown',e=>{if(!['KeyW','KeyA','KeyS','KeyD'].includes(e.code)||editableUI()||!running||paused||(complete&&!photo))return;e.preventDefault();if(document.activeElement instanceof HTMLElement&&document.activeElement!==document.body)document.activeElement.blur();cameraKeys.add(e.code)});
+window.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||e.code!=='KeyZ'||e.shiftKey||stage!==6||!running||paused||complete)return;const el=document.activeElement;if(el&&(el.isContentEditable||/^(TEXTAREA)$/.test(el.tagName)||el.tagName==='INPUT'&&!['range','button'].includes(el.type)))return;e.preventDefault();if(!e.repeat)undoPipe()});
+window.addEventListener('keydown',e=>{const shortcut=(e.ctrlKey||e.metaKey)&&((e.code==='KeyZ'&&e.shiftKey)||e.code==='KeyY');if(!shortcut||stage!==6||!running||paused||complete||editableUI())return;e.preventDefault();if(!e.repeat)redoPipe();});
+window.addEventListener('keyup',e=>cameraKeys.delete(e.code));
+window.addEventListener('blur',()=>cameraKeys.clear());
+function moveCameraKeys(dt){if(!running||paused||(complete&&!photo)||!$('toolChoice').classList.contains('hidden')){cameraKeys.clear();return}const x=Number(cameraKeys.has('KeyD'))-Number(cameraKeys.has('KeyA')),y=Number(cameraKeys.has('KeyW'))-Number(cameraKeys.has('KeyS'));if(!x&&!y)return;const step=4.2*viewScale*dt/Math.max(1,Math.hypot(x,y));const delta=new T.Vector3(x*step,y*step,0).applyQuaternion(camera.quaternion);cameraPan.add(delta);camera.position.add(delta);camera.updateMatrixWorld(true);if(ptr.valid){const old=ptr.x,oz=ptr.z;ray.setFromCamera(ndc,camera);if(ray.ray.intersectPlane(plane,hit)){ptr.x=hit.x;ptr.z=hit.z;ptr.lastX=ptr.x;ptr.lastZ=ptr.z}else{ptr.x=old;ptr.z=oz}}}
+function undoPipe(){if(stage!==6||paused)return;release();removeCreamFusion();const entry=pipeHistory.pop();if(!entry){toast('戻せる操作はありません');return;}const after=capturePipeState();if(entry.kind==='clear'){for(const p of entry.pieces){tray.add(p);pieces.push(p);}}else if(entry.created){const index=pieces.indexOf(entry.target);if(index>=0)pieces.splice(index,1);entry.target.parent?.remove(entry.target);}else{while(entry.target.children.length>entry.count)entry.target.remove(entry.target.children[entry.target.children.length-1]);entry.scales.forEach((scale,i)=>entry.target.children[i]?.scale.copy(scale));entry.target.userData.lastNode=null;}pipeRedoHistory.push({entry,after});liveFusionDirty=true;fusionPending=performance.now()+180;updatePipeHistoryButtons();toast(entry.kind==='clear'?'すべて消す前の状態に戻しました':'直前のひと筆を取り消しました');}
+function clearPiping(){if(stage!==6||paused)return;release();removeCreamFusion();if(!pieces.length){toast('バットには何もありません');return}const snapshot=pieces.splice(0);for(const p of snapshot)p.parent?.remove(p);recordPipeHistory({kind:'clear',pieces:snapshot});dustCoverage.clear();toast('すべて消しました。Ctrl+Z または「一つ前に戻る」で復元できます')} 
+// Stroke originals remain intact for undo; a smoothed implicit surface joins touching cream.
+let fusionPending=0,lastLiveFusion=0,liveFusionDirty=false;
+let creamSourcesVersion=0,creamBodiesCache=null,creamBodiesFrame=-1;
+let matrixFrame=-1;
+function refreshCookingMatrices(){const frame=Math.floor(performance.now()/16);if(matrixFrame!==frame){scene.updateMatrixWorld(true);matrixFrame=frame;}}
+function raycastVisiblePieces(targets){const meshes=[];for(const p of targets)p.traverseVisible(o=>{if(o.isMesh)meshes.push(o)});return ray.intersectObjects(meshes,false);} 
+const fusedCream=[];
+// A single held stroke can fold back onto itself, just like a strip of clay.
+// Test non-neighbouring capsules too, not only separate stroke meshes.
+function creamSelfContact(path){
+ if(!path||path.surfaceNormals||path.points.length<4)return false;
+ // A compact contact-only path keeps self-intersection checks bounded.
+ const stride=Math.max(1,Math.ceil(path.points.length/64)),p=path.points.filter((_,i)=>i%stride===0||i===path.points.length-1),r=path.radius,limit=(r*2.25)**2;
+ const arc=[0];for(let i=1;i<p.length;i++)arc[i]=arc[i-1]+p[i].distanceTo(p[i-1]);
+ const u=new T.Vector3(),v=new T.Vector3(),w=new T.Vector3(),delta=new T.Vector3();
+ for(let i=1;i<p.length;i++)for(let j=i+2;j<p.length;j++){
+  if(arc[j-1]-arc[i]<r*3)continue;
+  const a=p[i-1],b=p[i],c=p[j-1],d=p[j];
+  if(Math.max(a.x,b.x)+r*2.25<Math.min(c.x,d.x)||Math.max(c.x,d.x)+r*2.25<Math.min(a.x,b.x)||Math.max(a.y,b.y)+r*2.25<Math.min(c.y,d.y)||Math.max(c.y,d.y)+r*2.25<Math.min(a.y,b.y)||Math.max(a.z,b.z)+r*2.25<Math.min(c.z,d.z)||Math.max(c.z,d.z)+r*2.25<Math.min(a.z,b.z))continue;
+  u.subVectors(b,a);v.subVectors(d,c);w.subVectors(a,c);
+  const aa=u.lengthSq(),bb=u.dot(v),cc=v.lengthSq(),dd=u.dot(w),ee=v.dot(w),den=aa*cc-bb*bb;
+  let s=den>1e-14?clamp((bb*ee-cc*dd)/den):0;
+  let t=cc>1e-14?(bb*s+ee)/cc:0;
+  if(t<0){t=0;s=aa>1e-14?clamp(-dd/aa):0}
+  else if(t>1){t=1;s=aa>1e-14?clamp((bb-dd)/aa):0}
+  delta.copy(w).addScaledVector(u,s).addScaledVector(v,-t);
+  if(delta.lengthSq()<=limit)return true;
+ }
+ return false;
+}
+function removeCreamFusion(){for(const f of fusedCream){f.mesh.parent?.remove(f.mesh);f.mesh.geometry.dispose();for(const o of f.sources)o.visible=true}fusedCream.length=0;fusionPending=0}
+function rebuildCreamFusion(preview=false){
+ // Reuse unchanged joined surfaces, including fine cornet strokes.
+ const previous=fusedCream.splice(0);for(const f of previous)for(const o of f.sources)o.visible=true;
+ fusionPending=0;scene.updateMatrixWorld(true);
+ const sources=[];for(const p of pieces)p.traverse(o=>{if(o.isMesh&&['body','detail'].includes(o.userData.pipingRole)&&o.userData.creamPath)sources.push({o,p,box:new T.Box3().setFromObject(o)})});
+ const groups=[];const visited=new Set();
+ for(const a of sources){if(visited.has(a))continue;const group=[a];visited.add(a);for(let i=0;i<group.length;i++)for(const b of sources){if(visited.has(b)||b.o.material.color.getHex()!==a.o.material.color.getHex())continue;if(group[i].box.clone().expandByScalar(.008).intersectsBox(b.box)){visited.add(b);group.push(b)}}if(group.length>1||creamSelfContact(group[0].o.userData.creamPath))groups.push(group)}
+ for(const group of groups){
+  const signature=(preview?'preview:':'final:')+group.map(v=>v.o.uuid+':'+v.o.geometry.uuid+':'+v.o.matrixWorld.elements.join(',')).join('|');
+  const cached=previous.find(f=>f.signature===signature);
+  if(cached){previous.splice(previous.indexOf(cached),1);cached.sources.forEach(o=>o.visible=false);fusedCream.push(cached);continue;}
+  const owner=group[0].p,segments=[],bounds=new T.Box3();let smallest=Infinity;
+  for(const item of group){const path=item.o.userData.creamPath,r=path.radius;smallest=Math.min(smallest,r);const pts=path.points.map(v=>owner.worldToLocal(item.o.localToWorld(v.clone())));for(let i=1;i<pts.length;i++){const normal=path.surfaceNormals?path.surfaceNormals[i-1].clone().transformDirection(item.o.matrixWorld).transformDirection(owner.matrixWorld.clone().invert()):null;segments.push({a:pts[i-1],b:pts[i],r,normal});bounds.expandByPoint(pts[i-1]);bounds.expandByPoint(pts[i])}}
+  if(!segments.length)continue;
+  const maxR=Math.max(...segments.map(s=>s.r));bounds.expandByScalar(maxR*1.45);const extent=bounds.getSize(new T.Vector3());const cellBudget=preview?18000:55000;
+  const step=Math.max(preview?.016:.010,smallest*(preview?.60:.38),Math.max(extent.x,extent.y,extent.z)/(preview?24:40),Math.cbrt(Math.max(1e-12,(extent.x+.04)*(extent.y+.04)*(extent.z+.04))/cellBudget));
+  const nx=Math.ceil(extent.x/step)+1,ny=Math.ceil(extent.y/step)+1,nz=Math.ceil(extent.z/step)+1,total=nx*ny*nz;
+  if(total>(preview?110000:280000)||group.some(v=>v.o.userData.creamPath.surfaceNormals))continue;
+// Thin surface decoration keeps its flattened mesh; voxel rebuilding must not inflate it.
+  let field=new Float32Array(total);field.fill(step*3);const idx=(x,y,z)=>(z*ny+y)*nx+x;
+  for(const s of segments){const d=s.b.clone().sub(s.a),len=d.lengthSq();const lo=s.a.clone().min(s.b).addScalar(-s.r-step*2).sub(bounds.min).divideScalar(step),hi=s.a.clone().max(s.b).addScalar(s.r+step*2).sub(bounds.min).divideScalar(step);
+   for(let z=Math.max(0,Math.floor(lo.z));z<=Math.min(nz-1,Math.ceil(hi.z));z++)for(let y=Math.max(0,Math.floor(lo.y));y<=Math.min(ny-1,Math.ceil(hi.y));y++)for(let x=Math.max(0,Math.floor(lo.x));x<=Math.min(nx-1,Math.ceil(hi.x));x++){
+    const px=bounds.min.x+x*step-s.a.x,py=bounds.min.y+y*step-s.a.y,pz=bounds.min.z+z*step-s.a.z,t=clamp((px*d.x+py*d.y+pz*d.z)/Math.max(len,1e-12));let ex=px-d.x*t,ey=py-d.y*t,ez=pz-d.z*t;if(s.normal){const stretch=(ex*s.normal.x+ey*s.normal.y+ez*s.normal.z)*(1/.16-1);ex+=s.normal.x*stretch;ey+=s.normal.y*stretch;ez+=s.normal.z*stretch;}const v=Math.hypot(ex,ey,ez)-s.r,k=idx(x,y,z);// Polynomial smooth union removes the crease between adjoining deposits.
+    const previous=field[k],blendRadius=Math.min(s.r*.45,step*2.5),blend=Math.max(blendRadius-Math.abs(previous-v),0)/Math.max(blendRadius,1e-9);field[k]=Math.min(previous,v)-blend*blend*blendRadius*.25;
+   }
+  }
+  // Mild level-set smoothing rounds the junction without overlapping tube surfaces.
+  for(let pass=0;pass<(preview?1:2);pass++){const next=field.slice();for(let z=1;z<nz-1;z++)for(let y=1;y<ny-1;y++)for(let x=1;x<nx-1;x++){const k=idx(x,y,z);next[k]=field[k]*.4+(field[k-1]+field[k+1]+field[k-nx]+field[k+nx]+field[k-nx*ny]+field[k+nx*ny])*.1}field=next}
+  const corners=[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]],tets=[[0,5,1,6],[0,1,2,6],[0,2,3,6],[0,3,7,6],[0,7,4,6],[0,4,5,6]],positions=[];
+  const triangle=(a,b,c,normal)=>{const n=b.clone().sub(a).cross(c.clone().sub(a));if(n.dot(normal)<0)[b,c]=[c,b];positions.push(a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z)};
+  for(let z=0;z<nz-1;z++)for(let y=0;y<ny-1;y++)for(let x=0;x<nx-1;x++){
+   const values=corners.map(c=>field[idx(x+c[0],y+c[1],z+c[2])]);if(values.every(v=>v>=0)||values.every(v=>v<0))continue;
+   const points=corners.map(c=>new T.Vector3(bounds.min.x+(x+c[0])*step,bounds.min.y+(y+c[1])*step,bounds.min.z+(z+c[2])*step));
+   for(const tet of tets){const inside=tet.filter(i=>values[i]<0),outside=tet.filter(i=>values[i]>=0);if(!inside.length||!outside.length)continue;const cut=(i,j)=>points[i].clone().lerp(points[j],values[i]/(values[i]-values[j]));const normal=new T.Vector3();for(const i of outside)normal.addScaledVector(points[i],1/outside.length);for(const i of inside)normal.addScaledVector(points[i],-1/inside.length);
+    if(inside.length===1){const a=inside[0];triangle(cut(a,outside[0]),cut(a,outside[1]),cut(a,outside[2]),normal)}else if(inside.length===3){const a=outside[0];triangle(cut(a,inside[0]),cut(a,inside[1]),cut(a,inside[2]),normal)}else{const [a,b]=inside,[c,d]=outside,p=cut(a,c),q=cut(a,d),r=cut(b,c),s=cut(b,d);triangle(p,q,r,normal);triangle(q,s,r,normal)}
+   }
+  }
+  if(!positions.length)continue;
+  // Weld identical vertices so normals are shared over the entire cream surface.
+  const unique=[],indices=[],map=new Map();for(let i=0;i<positions.length;i+=3){const key=Math.round(positions[i]*1e6)+','+Math.round(positions[i+1]*1e6)+','+Math.round(positions[i+2]*1e6);let j=map.get(key);if(j===undefined){j=unique.length/3;map.set(key,j);unique.push(positions[i],positions[i+1],positions[i+2])}indices.push(j)}
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(unique,3));geo.setIndex(indices);geo.computeVertexNormals();geo.computeBoundingSphere();const mesh=new T.Mesh(geo,group[0].o.material);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.pipingRole=group.some(v=>v.o.userData.pipingRole==='body')?'body':'detail';mesh.userData.fusedCream=true;owner.add(mesh);const originals=group.map(v=>v.o);originals.forEach(o=>o.visible=false);fusedCream.push({mesh,sources:originals,signature});
+ }
+ for(const f of previous){f.mesh.parent?.remove(f.mesh);f.mesh.geometry.dispose();}
+}
+let stampShape='free';
+function stampCream(){
+ if(!pipingTool){toast('左の小皿から道具を選んでください');return}if(pipeThickness<=0)return;
+ removeCreamFusion();const h=pipingHit();if(!h)return;if(pipingTool==='cornet'&&!h.piece)return;
+ if(pipingTool==='bag'&&(Math.abs(h.point.x)>1.5||Math.abs(h.point.z)>1.0)){toast('バット内に配置してください');return}
+ const detail=pipingTool==='cornet',r=(detail?.06:.24)*pipeThickness;let outline=[];
+ if(stampShape==='circle'){for(let i=0;i<64;i++){const a=i/64*TAU;outline.push([Math.cos(a)*r,Math.sin(a)*r])}}
+ if(stampShape==='square')outline=[[-r,-r],[r,-r],[r,r],[-r,r]];
+ if(stampShape==='triangle')for(let i=0;i<3;i++){const a=Math.PI/2+i*TAU/3;outline.push([Math.cos(a)*r,Math.sin(a)*r])}
+ if(stampShape==='star')for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,s=i%2?r*.46:r;outline.push([Math.cos(a)*s,Math.sin(a)*s])}
+ if(stampShape==='heart')for(let i=0;i<64;i++){const a=i/64*TAU;outline.push([r*Math.pow(Math.sin(a),3),r*(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a))/16])}
+ const shape=new T.Shape();if(stampShape==='square'){const c=r*.36;shape.moveTo(-r+c,-r);shape.lineTo(r-c,-r);shape.quadraticCurveTo(r,-r,r,-r+c);shape.lineTo(r,r-c);shape.quadraticCurveTo(r,r,r-c,r);shape.lineTo(-r+c,r);shape.quadraticCurveTo(-r,r,-r,r-c);shape.lineTo(-r,-r+c);shape.quadraticCurveTo(-r,-r,-r+c,-r)}else outline.forEach((p,i)=>i?shape.lineTo(...p):shape.moveTo(...p));shape.closePath();const depth=r*.65;let geo;if(stampShape==='circle'){geo=new T.SphereGeometry(r,40,28);geo.translate(0,0,r);}else{geo=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSegments:5,steps:1,bevelSize:r*.10,bevelThickness:r*.10,curveSegments:24});if(stampShape==='square')geo.scale(1.55,1,1);}
+ let target=h.piece,created=!detail;if(created){target=new T.Group();target.position.copy(h.point);target.position.y=Math.max(.124,target.position.y);tray.add(target);const m=foodMat.clone();m.color.set(color);target.userData={size:1,fill:1,kind:'free',material:m,clean:0,plated:false,x:target.position.x,z:target.position.z};pieces.push(target)}
+ recordPipeHistory({target,created,count:target.children.length,scales:target.children.map(o=>o.scale.clone())});const material=detail?foodMat.clone():target.userData.material;material.color.set(color);const mesh=new T.Mesh(geo,material);mesh.userData.pipingRole=detail?'detail':'body';mesh.castShadow=mesh.receiveShadow=true;
+ if(detail){geo.scale(1,1,.12);geo.computeVertexNormals();}
+ const normal=detail?h.normal:new T.Vector3(0,1,0);const quaternion=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),normal);const world=new T.Matrix4().compose(h.point.clone().addScaledVector(normal,.003),quaternion,new T.Vector3(1,1,1));target.updateMatrixWorld(true);world.premultiply(target.matrixWorld.clone().invert());world.decompose(mesh.position,mesh.quaternion,mesh.scale);target.add(mesh);fusionPending=performance.now()+180;
+}
+// One smooth, capped mesh per stroke instead of thousands of overlapping beads.
+let smoothStroke=null;
+function buildSmoothStroke(stroke){
+const pts=stroke.points;if(pts.length<2)return;
+const curve=new T.CatmullRomCurve3(pts,false,'centripetal');curve.arcLengthDivisions=Math.min(768,Math.max(32,pts.length*3));
+const segments=Math.min(stroke.surfaceNormals?48:112,Math.max(10,(pts.length-1)*2)),sides=8;
+const frames=curve.computeFrenetFrames(segments,false),positions=[],normals=[],indices=[];
+if(stroke.surfaceNormals)stroke.mesh.updateWorldMatrix(true,false);
+// Curved interpolation can cut through a convex body. Reproject each icing
+// cross-section onto the visible outer skin, keeping the entire thin relief above it.
+const skin=stroke.surfaceNormals?cornetBodySurfaces(stroke.mesh.parent):null;
+const surfaceProbe=skin?new T.Raycaster():null;
+const localInverse=skin?stroke.mesh.matrixWorld.clone().invert():null;
+const projectedCenters=[];
+for(let i=0;i<=segments;i++){
+ const u=i/segments,center=curve.getPointAt(u),edge=Math.min(i,segments-i);
+ if(skin?.length){
+  const f=u*(stroke.surfaceNormals.length-1),k=Math.min(Math.floor(f),stroke.surfaceNormals.length-2);
+  const localNormal=stroke.surfaceNormals[k].clone().lerp(stroke.surfaceNormals[k+1],f-k).normalize();
+  const worldNormal=localNormal.clone().transformDirection(stroke.mesh.matrixWorld),worldCenter=center.clone().applyMatrix4(stroke.mesh.matrixWorld);
+  const worldScale=stroke.mesh.getWorldScale(new T.Vector3()),scale=Math.max(Math.abs(worldScale.x),Math.abs(worldScale.y),Math.abs(worldScale.z));
+  const reach=Math.max(.12,stroke.radius*scale*3);
+  surfaceProbe.set(worldCenter.clone().addScaledVector(worldNormal,reach),worldNormal.clone().negate());surfaceProbe.far=reach*2;
+  const contact=surfaceProbe.intersectObjects(skin,false).find(h=>h.face);
+  if(contact){const normal=cornetSurfaceNormal(contact);if(normal.dot(worldNormal)<0)normal.negate();center.copy(contact.point).addScaledVector(normal,(stroke.radius*.18+.002)*scale).applyMatrix4(localInverse);}
+ }
+ projectedCenters.push(center.clone());
+ const cap=Math.sin(Math.min(1,edge/2)*Math.PI/2);
+ const r=stroke.radius*Math.max(.001,cap);
+ for(let j=0;j<=sides;j++){
+  const a=j/sides*TAU,n=frames.normals[i].clone().multiplyScalar(Math.cos(a)).addScaledVector(frames.binormals[i],Math.sin(a));
+  let displacement=n.clone();
+  if(stroke.surfaceNormals){const f=u*(stroke.surfaceNormals.length-1),k=Math.min(Math.floor(f),stroke.surfaceNormals.length-2),surface=stroke.surfaceNormals[k].clone().lerp(stroke.surfaceNormals[k+1],f-k).normalize();displacement.addScaledVector(surface,-.84*displacement.dot(surface));}
+  const v=center.clone().addScaledVector(displacement,r);positions.push(v.x,v.y,v.z);normals.push(n.x,n.y,n.z);
+  if(i<segments&&j<sides){const k=i*(sides+1)+j;indices.push(k,k+1,k+sides+1,k+1,k+sides+2,k+sides+1)}
+ }
+}
+// Seal both tips: no open tube or visible interior at any camera angle.
+for(const end of [0,segments]){
+ const center=projectedCenters[end],normal=frames.tangents[end].clone().multiplyScalar(end===0?-1:1),ci=positions.length/3;
+ positions.push(center.x,center.y,center.z);normals.push(normal.x,normal.y,normal.z);
+ const base=end*(sides+1);
+ for(let j=0;j<sides;j++){if(end===0)indices.push(ci,base+j+1,base+j);else indices.push(ci,base+j,base+j+1)}
+}
+const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));geo.setAttribute('normal',new T.Float32BufferAttribute(normals,3));geo.setIndex(indices);if(stroke.surfaceNormals)geo.computeVertexNormals();geo.computeBoundingSphere();stroke.mesh.geometry.dispose();stroke.mesh.geometry=geo;stroke.mesh.userData.creamPath={points:stroke.points.map(p=>p.clone()),radius:stroke.radius,surfaceNormals:stroke.surfaceNormals?.map(n=>n.clone())};liveFusionDirty=true;
+}
+const pipingGeometry=new T.SphereGeometry(1,12,8);
+// Rounded joins and continuous swept connectors remove the bead-like gaps between samples.
+function connectPipingSamples(target,previous,current,radius,material,role){
+if(!previous)return;
+const direction=current.position.clone().sub(previous.position),length=direction.length();
+if(length<.00001||length>2)return;
+const connector=new T.Mesh(new T.CylinderGeometry(radius,radius,length,24,1,true),material);
+connector.position.copy(previous.position).add(current.position).multiplyScalar(.5);
+connector.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),direction.divideScalar(length));
+connector.userData.pipingRole=role;
+connector.castShadow=connector.receiveShadow=true;
+target.add(connector);
+}
+function restoreTopView(){orbiting=false;orbitId=null;orbitYaw=0;orbitPitch=.035;cameraPan.set(0,0,0);cameraKeys.clear();camera.position.set(0,12,.65);camera.up.set(0,0,-1);camera.lookAt(0,0,.65);camera.updateMatrixWorld(true)}
+function orbitCamera(){const target=new T.Vector3(0,.2,0).add(cameraPan);camera.up.set(0,1,0);camera.position.set(Math.sin(orbitYaw)*Math.sin(orbitPitch)*12,.2+Math.cos(orbitPitch)*12,Math.cos(orbitYaw)*Math.sin(orbitPitch)*12).add(cameraPan);camera.lookAt(target);camera.updateMatrixWorld(true)}
+function renderDishShelf(){const list=$('dishShelfItems');list.replaceChildren();for(const d of colourDishes){const b=document.createElement('button'),sample=document.createElement('span');sample.className='dishSample';sample.style.background=d.userData.filled?'#'+d.userData.cream.material.color.getHexString():'#46595e';b.append(sample,document.createTextNode(`小皿 ${d.userData.number}${d.userData.filled?'':'（空）'}`));b.disabled=!d.userData.filled;b.onclick=()=>{if(paused||!running||stage!==6)return;release();pendingDish=d;$('selectedDishLabel').textContent=`小皿 ${d.userData.number} の生地を入れます`;$('toolChoice').classList.remove('hidden')};list.append(b)}if(!colourDishes.some(d=>d.userData.filled)){const p=document.createElement('p');p.textContent='取り分け済みの生地がありません。白い生地の絞り袋を使用できます。';list.append(p);const b=document.createElement('button');b.textContent='白い生地を使う';b.onclick=()=>{pendingDish=null;$('selectedDishLabel').textContent='白い生地を入れます';$('toolChoice').classList.remove('hidden')};list.append(b)}}
+function loadPipingTool(tool){pipingTool=tool;loadedDish=pendingDish;color=loadedDish?'#'+loadedDish.userData.cream.material.color.getHexString():'#f1e4d2';$('toolChoice').classList.add('hidden');bagBody.material.color.set(tool==='cornet'?'#bcae92':'#d3cbbb');bag.scale.setScalar(tool==='cornet'?.63:1);bag.quaternion.identity();$('toolStatus').textContent=`${loadedDish?'小皿 '+loadedDish.userData.number:'白い生地'} → ${tool==='cornet'?'コルネ（顔・目・パーツ）':'絞り袋（本体・体）'}`;toast('バット内で左ボタンを長押し。動かすと線状に絞れます')}
+$('chooseBag').onclick=()=>loadPipingTool('bag');$('chooseCornet').onclick=()=>loadPipingTool('cornet');$('cancelTool').onclick=()=>$('toolChoice').classList.add('hidden');
+// Raycast the skin actually rendered, never the hidden construction strokes.
+// Existing icing is excluded: drawing over it must not build another layer.
+function cornetBodySurfaces(piece=null){const frame=Math.floor(performance.now()/16);if(creamBodiesCache&&creamBodiesFrame===frame&&creamBodiesCache.piece===piece)return creamBodiesCache.bodies;const bodies=[];for(const p of piece?[piece]:pieces)p.traverseVisible(o=>{if(o.isMesh&&o.userData.pipingRole==='body')bodies.push(o)});creamBodiesCache={piece,bodies};creamBodiesFrame=frame;return bodies;}
+function cornetSurfaceNormal(h){const g=h.object.geometry,a=g.attributes.position,n=g.attributes.normal;let result=h.face.normal.clone();if(n){const weights=new T.Vector3(),point=h.object.worldToLocal(h.point.clone());new T.Triangle(new T.Vector3().fromBufferAttribute(a,h.face.a),new T.Vector3().fromBufferAttribute(a,h.face.b),new T.Vector3().fromBufferAttribute(a,h.face.c)).getBarycoord(point,weights);if([weights.x,weights.y,weights.z].every(Number.isFinite)){result.set(0,0,0);for(const [i,w] of [[h.face.a,weights.x],[h.face.b,weights.y],[h.face.c,weights.z]])result.addScaledVector(new T.Vector3().fromBufferAttribute(n,i),w);}}return result.applyMatrix3(new T.Matrix3().getNormalMatrix(h.object.matrixWorld)).normalize();}
+function pipingHit(){refreshCookingMatrices();ray.setFromCamera(ndc,camera);if(pipingTool==='cornet'){const hits=ray.intersectObjects(cornetBodySurfaces(),false).filter(h=>h.face&&h.face.normal.clone().applyMatrix3(new T.Matrix3().getNormalMatrix(h.object.matrixWorld)).dot(ray.ray.direction)<-1e-5);if(!hits.length)return null;const h=hits[0];let piece=h.object;while(piece&&!pieces.includes(piece))piece=piece.parent;return {point:h.point.clone(),piece,normal:cornetSurfaceNormal(h)}}if(spacePiping()&&pipeTarget&&pipeStrokePlane){const point=new T.Vector3();return ray.ray.intersectPlane(pipeStrokePlane,point)?{point,piece:null}:null}const targets=pipingTool==='bag'&&pipeTarget?pieces.filter(p=>p!==pipeTarget):pieces;const hits=raycastVisiblePieces(targets);if(hits.length){let p=hits[0].object;while(p&&!pieces.includes(p))p=p.parent;return {point:hits[0].point.clone(),piece:p}}const point=new T.Vector3();return ray.ray.intersectPlane(new T.Plane(new T.Vector3(0,1,0),-.111),point)?{point,piece:null}:null}
+function beginFreePipe(){if(!['free','line'].includes(stampShape)){stampCream();return}if(stampShape==='free'&&pipingTool==='bag'&&pipeDrawMode==='outline'){beginOutline();return}pipeStrokePlane=null;if(pipeThickness<=0){toast('線の太さが0ptです。太さを上げると描けます');return}if(!pipingTool){toast('左の小皿をクリックし、絞り袋かコルネを選んでください');return}const h=pipingHit();if(!h)return;if(pipingTool==='cornet'){if(!h.piece){toast('本体の表面を押して、顔や目を絞りましょう');return}pipeTarget=h.piece}else{if(Math.abs(h.point.x)>1.52||Math.abs(h.point.z)>1.04){toast('コーンスターチを敷いたバット内で絞りましょう');return}const p=new T.Group();p.position.set(h.point.x,.111,h.point.z);const m=foodMat.clone();m.color.set(color);p.userData={size:1,fill:1,kind:'free',material:m,clean:0,plated:false,x:p.position.x,z:p.position.z};tray.add(p);pieces.push(p);pipeTarget=p;if(spacePiping()){const anchor=h.point.clone();anchor.y+=pipeHeight;camera.getWorldDirection(pipePlaneNormal);pipeStrokePlane=new T.Plane().setFromNormalAndCoplanarPoint(pipePlaneNormal,anchor)}}recordPipeHistory({target:pipeTarget,created:pipingTool==='bag',count:pipeTarget.children.length,scales:pipeTarget.children.map(o=>o.scale.clone())});pipeTarget.userData.lastNode=null;pipeLast=null;pipeNodes=0;smoothStroke=null;emitPiping(.06)}
+function emitPiping(dt){
+if(!pipeTarget||!ptr.down||pipeThickness<=0)return;
+const h=pipingHit();if(!h||pipingTool==='cornet'&&h.piece!==pipeTarget)return;
+const p=h.point.clone(),spatial=spacePiping(),detail=pipingTool==='cornet';
+if(!detail&&!spatial)p.y=Math.max(.111,p.y)+pipeHeight;
+const radius=(detail?.024:.105)*pipeThickness,margin=radius*1.1;
+if(!detail&&(Math.abs(p.x)>1.77-margin||Math.abs(p.z)>1.22-margin||p.y<.111||p.y>3))return;
+const distance=pipeLast?pipeLast.distanceTo(p):0;
+// Keep the current stroke alive across fast pointer movement or a missed hit.
+// A distant cornet hit is ignored without discarding the connected mesh.
+if(pipeLast&&detail&&distance>Math.max(.65,radius*24))return;
+const world=p.clone();if(detail)world.addScaledVector(h.normal,radius*.18+.002);else world.y+=radius*.65;
+// Cornet always references the original body, never earlier decoration.
+const surfaceNormal=detail?h.normal.clone().transformDirection(pipeTarget.matrixWorld.clone().invert()):null;
+const local=pipeTarget.worldToLocal(world);
+if(!smoothStroke){
+ const material=detail?foodMat.clone():pipeTarget.userData.material;if(detail)material.color.set(color);
+ const mesh=new T.Mesh(new T.BufferGeometry(),material);mesh.userData.pipingRole=detail?'detail':'body';mesh.castShadow=mesh.receiveShadow=true;pipeTarget.add(mesh);
+ const tip=local.clone().add(detail?new T.Vector3(.001,0,0).projectOnPlane(surfaceNormal):new T.Vector3(0,.001,0));
+ smoothStroke={mesh,points:[local,tip],surfaceNormals:detail?[surfaceNormal.clone(),surfaceNormal.clone()]:null,radius,elapsed:0,stationary:0,straight:stampShape==='line'};buildSmoothStroke(smoothStroke);pipeLast=p;return;
+}
+const s=smoothStroke;s.elapsed+=dt;
+// A straight stroke retains its initial anchor and updates only its endpoint.
+// Surface icing is reprojected onto the body in buildSmoothStroke.
+if(s.straight){
+ if(s.elapsed<(detail?1/15:1/24))return;
+ if(s.points[1].distanceToSquared(local)<.000001)return;
+ s.points[1].copy(local);
+ if(s.surfaceNormals)s.surfaceNormals[1].copy(surfaceNormal);
+ s.elapsed=0;buildSmoothStroke(s);pipeLast=p;return;
+}
+if(distance<Math.max(.002,radius*.18)){
+ if(s.points.length===2&&!detail){s.stationary+=dt;const growth=Math.min(radius*2,s.stationary*.12);s.points[1].copy(s.points[0]).add(new T.Vector3(0,.001+growth,0));s.radius=radius+Math.min(radius,s.stationary*.045);if(s.elapsed>=.05){buildSmoothStroke(s);s.elapsed=0}}
+ return;
+}
+if(s.elapsed<(detail?1/15:1/24))return;
+// Compact old samples, never end a held stroke at an arbitrary point count.
+// Preserve both endpoints and their matching surface normals.
+if(s.points.length>=192){
+ const compact=[s.points[0]],normals=s.surfaceNormals?[s.surfaceNormals[0]]:null;
+ for(let i=2;i<s.points.length-1;i+=2){compact.push(s.points[i]);if(normals)normals.push(s.surfaceNormals[i]);}
+ compact.push(s.points[s.points.length-1]);if(normals)normals.push(s.surfaceNormals[s.surfaceNormals.length-1]);
+ s.points=compact;s.surfaceNormals=normals;
+}
+if(s.points.length===2&&s.points[0].distanceTo(s.points[1])<.002){s.points.pop();s.surfaceNormals?.pop();}
+s.points.push(local);if(s.surfaceNormals)s.surfaceNormals.push(surfaceNormal.clone());s.elapsed=0;buildSmoothStroke(s);pipeLast=p;pipeNodes++;
+}
+canvas.addEventListener('pointerdown',e=>{if(e.button!==2||!(stage===6&&!complete||complete&&photo)||!running||paused||!$('toolChoice').classList.contains('hidden'))return;e.preventDefault();e.stopImmediatePropagation();release();orbiting=true;orbitId=e.pointerId;orbitX=e.clientX;orbitY=e.clientY;setPointerOrbitPivot(e);canvas.setPointerCapture(e.pointerId)},true);
+canvas.addEventListener('pointermove',e=>{if(!orbiting||e.pointerId!==orbitId)return;e.preventDefault();e.stopImmediatePropagation();rotateAroundPointer(e.clientX-orbitX,e.clientY-orbitY);orbitX=e.clientX;orbitY=e.clientY},true);
+function stopOrbit(e){if(e.pointerId!==orbitId)return;orbiting=false;orbitId=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);project(e);ptr.lastX=ptr.x;ptr.lastZ=ptr.z;}
+canvas.addEventListener('pointerup',stopOrbit,true);
+canvas.addEventListener('pointercancel',stopOrbit,true);
+// Capture touch gestures before recipe pointer handlers. One finger cooks;
+// two fingers zoom and orbit (or pan outside modelling/photo modes).
+const touchPanel=document.createElement('nav');touchPanel.id='touchControls';touchPanel.className='hidden';touchPanel.setAttribute('aria-label','タッチ操作');touchPanel.innerHTML='<button id="touchMove" aria-pressed="false">✋ 視点移動</button><button id="touchTools" aria-pressed="false">設定</button><button id="touchHelp" aria-pressed="false">説明</button>';document.body.append(touchPanel);
+let touchMove=false,touchGesture=false;const touchPointers=new Map();
+$('touchMove').onclick=()=>{release();touchMove=!touchMove;$('touchMove').setAttribute('aria-pressed',String(touchMove));toast(touchMove?'1本指で画面を移動。調理する時はもう一度押してください':'1本指で調理・描画、2本指でズーム・視点操作');};
+for(const [id,cls,other] of [['touchTools','touch-tools-open','touch-help-open'],['touchHelp','touch-help-open','touch-tools-open']])$(id).onclick=()=>{release();document.body.classList.toggle(cls);document.body.classList.remove(other);$('touchTools').setAttribute('aria-pressed',String(document.body.classList.contains('touch-tools-open')));$('touchHelp').setAttribute('aria-pressed',String(document.body.classList.contains('touch-help-open')));resize();};
+function touchPanPixels(dx,dy){const delta=new T.Vector3(-dx*(camera.right-camera.left)/canvas.clientWidth,dy*(camera.top-camera.bottom)/canvas.clientHeight,0).applyQuaternion(camera.quaternion);camera.position.add(delta);cameraPan.add(delta);camera.updateMatrixWorld(true);}
+function touchPair(){const p=[...touchPointers.values()];return p.length<2?null:{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.max(8,Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y))};}
+canvas.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'||!running||paused)return;touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(touchPointers.size>=2||touchMove){e.preventDefault();e.stopImmediatePropagation();if(!touchGesture){release();touchGesture=true;if(stage===6||complete&&photo)setPointerOrbitPivot();}canvas.setPointerCapture(e.pointerId);}},true);
+canvas.addEventListener('pointermove',e=>{if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId))return;const previous=touchPointers.get(e.pointerId),before=touchPair();touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!touchGesture)return;e.preventDefault();e.stopImmediatePropagation();if(paused)return;const after=touchPair();if(before&&after){const factor=before.d/after.d;if(Math.abs(factor-1)>.0005){const position=camera.position.clone();zoomView(viewScale*factor);camera.position.copy(position);camera.updateMatrixWorld(true);}if(stage===6||complete&&photo)rotateAroundPointer(after.x-before.x,after.y-before.y);else touchPanPixels(after.x-before.x,after.y-before.y);}else if(touchMove)touchPanPixels(e.clientX-previous.x,e.clientY-previous.y);},true);
+function finishTouchGesture(e){if(e.pointerType!=='touch')return;touchPointers.delete(e.pointerId);if(touchGesture){e.preventDefault();e.stopImmediatePropagation();if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(!touchPointers.size){touchGesture=false;release();}}}
+canvas.addEventListener('pointerup',finishTouchGesture,true);canvas.addEventListener('pointercancel',finishTouchGesture,true);window.addEventListener('blur',()=>{touchPointers.clear();touchGesture=false;});
+const eyeMat=mat('#383346',.34),eyeShine=mat('#e9e6dc',.3),earMat=mat('#bd778c',.8);
+function ellipsoid(parent,x,y,z,sx,sy,sz,m){const o=new T.Mesh(new T.SphereGeometry(1,28,20),m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=o.receiveShadow=true;parent.add(o);return o}
+function makePiece(x,z){const p=new T.Group();p.position.set(x,.107,z);const m=foodMat.clone();m.color.set(color);if(shape==='heart'){ellipsoid(p,-.077,.115,-.045,.14,.13,.145,m);ellipsoid(p,.077,.115,-.045,.14,.13,.145,m);const t=ellipsoid(p,0,.10,.065,.145,.115,.165,m);t.rotation.y=Math.PI/4}else{const profile=[[0,0],[.12,.004],[.2,.045],[.225,.11],[.213,.18],[.17,.235],[.095,.26],[.035,.279],[0,.30]];const mesh=new T.Mesh(new T.LatheGeometry(profile.map(v=>new T.Vector2(...v)),64),m);mesh.castShadow=mesh.receiveShadow=true;p.add(mesh);if(shape==='bunny'){for(const x of [-.10,.10]){ellipsoid(p,x,.12,-.21,.063,.08,.18,m);ellipsoid(p,x,.185,-.23,.026,.014,.105,earMat)}for(const x of [-.075,.075]){ellipsoid(p,x,.244,.045,.022,.012,.029,eyeMat);ellipsoid(p,x-.005,.255,.037,.007,.003,.009,eyeShine)}ellipsoid(p,0,.245,.095,.019,.009,.014,earMat)}}
+p.userData={size,fill:.08,kind:shape,material:m,clean:0,plated:false,x,z};p.scale.setScalar(size*.22);tray.add(p);pieces.push(p);return p}
+function disposePieces(){removeCreamFusion();const retained=new Set();for(const e of pipeHistory){if(e.kind==='clear')for(const p of e.pieces)retained.add(p)}for(const p of retained)if(!pieces.includes(p))pieces.push(p);pipeHistory.length=0;for(const p of pieces){p.parent?.remove(p);p.traverse(o=>{if(o.isMesh){o.geometry.dispose();if(o.material!==earMat&&o.material!==eyeMat&&o.material!==eyeShine)o.material.dispose()}})}pieces.length=0;activePiece=selected=null}
+// Colouring station: unlimited dishes, paged in groups of six; no dish is discarded.
+const colouringStation=new T.Group();scene.add(colouringStation);colouringStation.visible=false;
+const icingColours=[['#f7d627','レモンイエロー'],['#ee792c','オレンジ'],['#d94e89','ピンク（ローズピンク）'],['#bc2035','クリスマスレッド'],['#784199','バイオレット'],['#4ca7d8','スカイブルー'],['#65a446','リーフグリーン'],['#78472c','ブラウン'],['#dfa71f','ゴールデンイエロー'],['#d42c3d','ノーテイストレッド'],['#742d49','バーガンディ'],['#294e9f','ローヤルブルー'],['#258f91','ティール'],['#238343','ケリーグリーン'],['#788444','モスグリーン'],['#24232b','ブラック']];
+const colourPots=[],colourDishes=[];let dishPage=0,chosenDish=null;
+const colourDrag={kind:null,index:0,dish:null,amount:0};
+for(let i=0;i<icingColours.length;i++){const g=new T.Group();g.position.set(-1.40+(i%8)*.40,0,.60+Math.floor(i/8)*.42);colouringStation.add(g);cyl(.13,.13,mat('#c1b7a8',.55),0,.075,0,g);cyl(.112,.014,mat(icingColours[i][0],.23),0,.15,0,g);ring(.125,.009,steel,0,.15,0,g);g.userData.index=i;colourPots.push(g)}
+const colourSpoon=new T.Group();colouringStation.add(colourSpoon);const colourSpoonHead=new T.Mesh(new T.SphereGeometry(1,24,12),steel);colourSpoonHead.scale.set(.065,.014,.09);colourSpoon.add(colourSpoonHead);box(.025,.018,.31,steel,0,.02,.19,colourSpoon);colourSpoon.visible=false;
+const toothpick=new T.Group();colouringStation.add(toothpick);const toothWood=box(.013,.013,.37,mat('#c6a875',.8),0,0,.16,toothpick);const toothTip=new T.Mesh(new T.SphereGeometry(.027,12,8),mat('#dd567b',.25));toothTip.position.z=-.035;toothpick.add(toothTip);toothpick.visible=false;
+function colourDishAt(){return colourDishes.find(d=>d.visible&&Math.hypot(ptr.x-d.position.x,ptr.z-d.position.z)<.25)}
+function showDishPage(){colourDishes.forEach((d,i)=>{d.visible=Math.floor(i/6)===dishPage;const n=i%6;d.position.set(-1.34+(n%3)*.55,0,-1.05+Math.floor(n/3)*.65)});updateColourInfo();$('dishPrev').disabled=dishPage===0;$('dishNext').disabled=dishPage>=Math.ceil(colourDishes.length/6)-1}
+function updateColourInfo(){const u=chosenDish?.userData;$('dishInfo').textContent=`小皿 ${colourDishes.length}枚 · ${dishPage+1} / ${Math.max(1,Math.ceil(colourDishes.length/6))}ページ\n${u?'選択：小皿 '+u.number+' · 混ざり具合 '+(u.filled?Math.round(u.mix*100)+'%':'未取り分け'):'小皿を選んでください'}`;$('dishInfo').style.whiteSpace='pre-line';}
+function newColourDish(){kitchenDishSE();const d=new T.Group();colouringStation.add(d);prepBowl(d,.25,.22,mat('#718e93',.4));const m=foamMaterial.clone();m.color.set('#f1e4d2');m.roughness=.5;const cream=ellipsoid(d,0,.13,0,.19,.055,.19,m);cream.visible=false;const tintMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{pigment:{value:new T.Color('#d74d83')},blend:{value:0},turn:{value:0}},vertexShader:`varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`varying vec2 vUv;uniform vec3 pigment;uniform float blend;uniform float turn;void main(){vec2 p=(vUv-.5)*2.0;float r=length(p);float a=atan(p.y,p.x);float swirl=sin(a*3.0-r*17.0-turn*3.0);float stripe=smoothstep(.10,.70,swirl);float edge=1.0-smoothstep(.78,.98,r);float spot=exp(-dot(p-vec2(.20,0.0),p-vec2(.20,0.0))*30.0);float ink=mix(spot,stripe*.66+spot*.34,smoothstep(0.0,.25,blend));gl_FragColor=vec4(pigment,ink*edge*(1.0-blend)*.9);}`});const tint=new T.Mesh(new T.CircleGeometry(.174,64),tintMaterial);tint.rotation.x=-Math.PI/2;tint.position.set(0,.188,0);tint.renderOrder=2;d.add(tint);tint.visible=false;d.userData={number:colourDishes.length+1,cream,tint,filled:false,mix:1,pigment:null,base:new T.Color('#f1e4d2'),target:new T.Color('#f1e4d2')};colourDishes.push(d);chosenDish=d;dishPage=Math.floor((colourDishes.length-1)/6);showDishPage();return d}
+function selectColourDish(d){chosenDish=d;color='#'+d.userData.cream.material.color.getHexString();paletteUI();showDishPage()}
+function beginColourDrag(){const pot=colourPots.find(p=>Math.hypot(ptr.x-p.position.x,ptr.z-p.position.z)<.17);if(pot){colourDrag.kind='tint';colourDrag.index=pot.userData.index;toothTip.material.color.set(icingColours[colourDrag.index][0]);toothpick.visible=true;$('colourName').textContent=icingColours[colourDrag.index][1];return}if(Math.hypot(ptr.x-bowl.position.x,ptr.z-bowl.position.z)<.65){colourDrag.kind='cream';colourSpoon.visible=true;return}const d=colourDishAt();if(d){selectColourDish(d);if(!d.userData.filled){toast('右のボウルからこの小皿へ、生地を取り分けましょう');return}colourDrag.kind='mix';colourDrag.dish=d;colourDrag.amount=0;colourSpoon.visible=true}}
+let lastDishButtonUpdate=0;
+function positionDishButton(){const now=performance.now();if(now-lastDishButtonUpdate<80)return;lastDishButtonUpdate=now;const button=$('addDish');button.classList.toggle('hidden',stage!==5||complete||photo);if(stage!==5)return;const first=colourDishes.find(d=>d.visible);const anchor=new T.Vector3((first?first.position.x:-1.34)-.27,.23,first?first.position.z:-1.05).project(camera);const rimX=(anchor.x+1)*innerWidth/2,centerY=(1-anchor.y)*innerHeight/2;const width=button.offsetWidth||(matchMedia('(pointer:coarse), (max-width:750px)').matches?110:144);button.style.left=Math.max(8,Math.min(innerWidth-width-8,rimX-width-20))+'px';button.style.top=clamp(centerY-40,80,Math.max(80,innerHeight-180))+'px';button.disabled=paused||!running;}
+function moveColourDrag(){if(colourDrag.kind==='tint'){toothpick.position.set(ptr.x,.34,ptr.z);return}if(colourDrag.kind==='mix'&&colourDrag.dish){const d=colourDrag.dish,dx=ptr.x-d.position.x,dz=ptr.z-d.position.z;const radius=Math.hypot(dx,dz),limit=radius>.105?.105/radius:1;colourSpoon.position.set(d.position.x+dx*limit,.205,d.position.z+dz*limit);colourSpoon.rotation.y=Math.atan2(dx,dz);return}if(colourDrag.kind)colourSpoon.position.set(ptr.x,.27,ptr.z)}
+function dropColourDrag(){const d=colourDishAt();if(d&&colourDrag.kind==='cream'){d.userData.filled=true;d.userData.cream.visible=true;d.userData.cream.scale.y=.055;selectColourDish(d);toast('生地を小皿に取り分けました。下のカラー瓶から爪楊枝で色を加えましょう')}if(d&&colourDrag.kind==='tint'){if(!d.userData.filled)toast('先に生地を取り分けてください');else{const u=d.userData;u.base.copy(u.cream.material.color);u.pigment=colourDrag.index;u.target.copy(u.base).lerp(new T.Color(icingColours[u.pigment][0]),.56);u.mix=0;u.tint.scale.setScalar(1);u.tint.visible=true;u.tint.material.uniforms.pigment.value.set(icingColours[u.pigment][0]);u.tint.material.uniforms.blend.value=0;u.tint.material.uniforms.turn.value=0;selectColourDish(d);toast(icingColours[u.pigment][1]+'を加えました。小皿内をドラッグして混ぜましょう')}}cancelColourDrag()}
+function cancelColourDrag(){colourDrag.kind=null;colourDrag.dish=null;colourSpoon.visible=toothpick.visible=false}
+function mixColourDish(dist){const d=colourDrag.dish;if(colourDrag.kind!=='mix'||!d||colourDishAt()!==d)return;const u=d.userData;const cx=ptr.x-d.position.x,cz=ptr.z-d.position.z,px=ptr.lastX-d.position.x,pz=ptr.lastZ-d.position.z;if(Math.hypot(cx,cz)>.19||Math.hypot(px,pz)>.19)return;u.mix=clamp(u.mix+dist*.38);u.cream.material.color.copy(u.base).lerp(u.target,u.mix);u.tint.visible=u.mix<1;u.tint.scale.setScalar(1);u.tint.material.uniforms.blend.value=u.mix;const cross=px*cz-pz*cx;u.tint.material.uniforms.turn.value+=Math.sign(cross)*dist*5;u.cream.scale.y=.055+Math.sin(u.mix*40)*.005*(1-u.mix);color='#'+u.cream.material.color.getHexString();$('colourName').textContent=`小皿${u.number} · ${u.pigment===null?'色なし':icingColours[u.pigment][1]} · 混ざり具合 ${Math.round(u.mix*100)}%`}
+$('addDish').onclick=()=>{if(stage===5&&!paused)newColourDish()};$('dishPrev').onclick=()=>{dishPage=Math.max(0,dishPage-1);showDishPage()};$('dishNext').onclick=()=>{dishPage=Math.min(Math.max(0,Math.ceil(colourDishes.length/6)-1),dishPage+1);showDishPage()};
+const stages=[
+['ゼラチンをふやかして湯煎する','左の冷水の中を押したままやさしく動かし、手で3枚を水に浸してふやかします。ふやけたら1枚ずつ中央の小さいボウルへ。右のお湯に浮かべ、スプーンで混ぜて溶かしましょう。※冷水では溶かさず、ふやかします。','SOAK BY HAND · TRANSFER · STIR IN WATER BATH'],
+['卵白を高速で泡立てる','Mサイズの卵白1個分。まずボウルの縁を左右にドラッグして傾け、内側を押したまま動かしてハンドミキサーの高速で泡立てます。白くふんわりしたら、上の砂糖を1回目・2回目の順にドラッグして投入。ピンと角が立ったら「次の工程へ」。','TILT · HIGH-SPEED MIX · ADD SUGAR TWICE'],
+['シロップを作る','上の水30g・水あめ10g・グラニュー糖30gを、1つずつ中央の鍋へドラッグ。右のダイヤルを時計回りに回して火力を調節します。鍋の持ち手を押したまま動かし、傾けて混ぜましょう。110℃まで煮詰まったら次へ進みます。','ADD INGREDIENTS · TURN DIAL · SWIRL · 110°C'],
+['泡立てた卵白にシロップとゼラチンを混ぜる','画面上側にある鍋を押したまま手前へドラッグし、高い位置から細くシロップを流し入れます。注ぎ終えたらボウル内をドラッグして30秒攪拌。上のゼラチンの小鉢を運んで加え、さらに10秒軽く混ぜましょう。','POUR SYRUP · MIX 30s · ADD GELATIN · MIX 10s'],
+['ゼラチンを加える','準備した溶かしゼラチンを加えます。ボウル内で押したまま混ぜて、ふわっと均一にしましょう。','ADD MELTED GELATIN'],
+['小皿に取り分けて、色付け','「＋ 小皿を取る」で深めの小皿を好きなだけ追加。右のボウルから小皿へドラッグして少量の生地を取り分け、下のカラー瓶から爪楊枝を小皿へ運びます。小皿内を押したまま動かすとスプーンで混ざります。選んだ小皿の色で次の絞り出しへ。','PORTION · ADD ICING COLOUR · MIX WITH SPOON'],
+['形を作る','左の小皿をクリックして、絞り袋（本体・体）かコルネ（顔・目・パーツ）を選びます。コーンスターチをたっぷり敷いた中央のバットで左ボタンを長押しして絞り、動かして自由な形に。コルネは作った本体の表面に絞れます。線の太さ・絞る高さを調整し、本体の上に生地を重ねて立体的にも描けます。「一つ前に戻る」「すべてやり直す」で修正できます。この工程だけ右ボタンを押しながらドラッグして四方八方に視点回転。全工程でWASDキーによるカメラ移動が可能です。','CHOOSE A DISH · PIPE BODY · DRAW DETAILS'], 
+['粉を振るう','接している本体とパーツは色を保ったままひとつの作品にまとまります。上で押したまま動かして、細かな粉をさらさらと振りかけましょう。','JOIN TOUCHING PARTS · GENTLY SIFT POWDER'],
+['少し休ませる','絞った形を保てるまで待ちます。凝固の待ち時間はゲーム用に短縮しています。','LET THEM SET'],
+['余分な粉を払う','ひとつずつ、押しながら筆でなでて粉を払いましょう。粉を落とすと、淡い色とやわらかい表面が見えてきます。','BRUSH OFF THE POWDER'],
+['お皿に盛り付ける','左のマシュマロを、右の青緑のお皿へドラッグ。すべて乗せたら「完成！」を押してください。お皿の上でも並べ替えできます。','PLATE & SERVE']];
+// Combined step 4: pouring and timed mixing require real pointer movement.
+let combinePhase='pour',combinePour=0,combineSeconds=0,combineTimerStarted=false,combineMotion=0,gelatinPourTime=0,combineEffectTime=0,combineEffectKind='syrup',mixAngle=0,mixTurn=0;
+const combineRipples=new T.Group();bowl.add(combineRipples);combineRipples.visible=false;
+for(let i=0;i<3;i++){const ripple=ring(.15,.016,new T.MeshPhysicalMaterial({color:'#bd8946',roughness:.24,transparent:true,opacity:.7,depthWrite:false}),.25,.68,-.20,combineRipples);ripple.userData.offset=i/3;}
+// Visible ribbons sit directly on the meringue; mixing gradually incorporates them.
+const combineRibbons=new T.Group();bowl.add(combineRibbons);combineRibbons.visible=false;
+const ribbonMaterials={syrup:new T.MeshPhysicalMaterial({color:'#ad6a24',roughness:.23,transparent:true,opacity:.9,depthWrite:false,clearcoat:.8}),gelatin:new T.MeshPhysicalMaterial({color:'#d3a043',roughness:.16,transparent:true,opacity:.85,depthWrite:false,clearcoat:1})};
+for(const kind of ['syrup','gelatin'])for(let i=0;i<4;i++){const points=[];for(let j=0;j<=40;j++){const u=j/40,a=u*Math.PI*2.1+i*1.57,r=.10+u*.37;points.push(new T.Vector3(Math.cos(a)*r,0,Math.sin(a)*r));}const ribbon=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points),64,kind==='syrup'?.014:.010,6,false),ribbonMaterials[kind]);ribbon.userData.kind=kind;combineRibbons.add(ribbon);}
+const mixFX=new T.Group();bowl.add(mixFX);mixFX.visible=false;
+const swirlRings=[];for(let i=0;i<5;i++){const o=ring(.12+i*.074,.009,new T.MeshPhysicalMaterial({color:'#e8d0aa',roughness:.35,transparent:true,opacity:.55,depthWrite:false}),0,.72,0,mixFX);o.scale.z=.78;swirlRings.push(o)}
+const mixSpecks=[];for(let i=0;i<36;i++){const o=new T.Mesh(new T.SphereGeometry(1,8,6),mat('#f4e5d0',.55));o.scale.setScalar(.012);mixFX.add(o);mixSpecks.push(o)}
+const pourDroplets=new T.Group();bowl.add(pourDroplets);pourDroplets.visible=false;
+for(let i=0;i<22;i++){const o=new T.Mesh(new T.SphereGeometry(1,8,6),mat('#d8ad65',.22));o.scale.setScalar(.014);pourDroplets.add(o)}
+function startCombineEffect(kind){combineEffectKind=kind;combineEffectTime=5;combineRipples.visible=true;for(const r of combineRipples.children)r.material.color.set(kind==='syrup'?'#b98035':'#d8af63');for(const d of pourDroplets.children)d.material.color.set(kind==='syrup'?'#dcaa50':'#e7c983');}
+function drawCombineStream(a,b,width,color){const direction=b.clone().sub(a);stream.visible=true;stream.material.color.set(color);stream.position.copy(a).add(b).multiplyScalar(.5);stream.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),direction.normalize());stream.scale.set(width,a.distanceTo(b)/.6,width);}
+const combineDrag={kind:null,startX:0,startZ:0};
+function resetCombine(){mixAngle=0;mixTurn=0;combinePhase='pour';combinePour=0;combineSeconds=0;combineTimerStarted=false;combineMotion=0;gelatinPourTime=0;combineEffectTime=0;combineRipples.visible=false;combineRibbons.visible=false;combineDrag.kind=null;saucepan.position.set(.08,1.10,-1.64);saucepan.rotation.set(0,0,0);panLiquid.visible=true;panLiquid.position.y=.42;panLiquid.scale.set(.94,1,.94);panLiquid.material.color.set('#d6b56e');panLiquid.material.opacity=.86;syrupBubbles.visible=false;syrupAddition.visible=false;smallBowl.position.set(0,0,-1.28);smallBowl.rotation.set(0,0,0);smallBowl.visible=false;meltedGelatin.visible=true;meltedGelatin.material.opacity=.82;meltedGelatin.scale.set(1,1,1);prepSpoon.visible=false;prepSheets.forEach(s=>s.visible=false);stiffPeak.visible=true;foam.scale.set(1,.48,1);foam.position.y=.32;foamMaterial.color.set('#eadfce');foamBubbles.visible=false;handMixer.position.set(-.22,1.13,.12);}
+function beginCombineDrag(){if(combinePhase==='pour'){if(Math.hypot(ptr.x-saucepan.position.x,ptr.z-(saucepan.position.z+1))<.48||Math.hypot(ptr.x-saucepan.position.x,ptr.z-saucepan.position.z)<.80){combineDrag.kind='pour';combineDrag.startX=ptr.x;combineDrag.startZ=ptr.z;toast('上の鍋をつかんだまま手前へドラッグ。高い位置から細く注ぎましょう')}}else if(combinePhase==='gelatin'){if(Math.hypot(ptr.x-smallBowl.position.x,ptr.z-smallBowl.position.z)<.44){combineDrag.kind='gelatin';smallBowl.position.y=.72}}else if(onBowl()){combineDrag.kind='mix';combineMotion=0;stiffPeak.visible=false}}
+function moveCombineDrag(){if(combineDrag.kind==='gelatin')smallBowl.position.set(clamp(ptr.x,-1.4,1.4),.72,clamp(ptr.z,-1.5,.7));}
+function cancelCombineDrag(){combineDrag.kind=null;combineMotion=0;mixTurn=0;if(stage===3&&combinePhase==='gelatin'){smallBowl.position.set(0,0,-1.28);smallBowl.rotation.set(0,0,0)}}
+function dropCombineDrag(){if(combineDrag.kind==='gelatin'&&Math.hypot(smallBowl.position.x,smallBowl.position.z)<.65){combinePhase='gelatinPour';gelatinPourTime=0;combineSeconds=0;if(smallBowl.parent!==scene)scene.attach(smallBowl);smallBowl.position.set(-.16,1.34,-1.33);smallBowl.rotation.set(.72,0,0);smallBowl.visible=true;tone(720);toast('溶かしゼラチンを注いでいます。金色の流れと液面の変化を確認しましょう')}cancelCombineDrag()}
+let stage=-1,progress=0,running=false,paused=false,complete=false,photo=false,age=0,whipDistance=0,sugar=0,toastTimer=0,heat=22;const dustCoverage=new Set();let audio=null,sound=true;
+let kitchenAudio=null,bgmAudio=null,bgmEnabled=true;
+// 提供された「コミカル・まったりクッキング」をWeb Audio APIで合成。
+// 108 BPM、木琴メロディ・ピチカート・C→Am→F→Gをそのまま使用。
+// 初回だけバッファに合成し、調理中のタイマーや音源ノード増殖を避ける。
+function initBGM(){
+ if(!audio||bgmAudio)return;
+ const rate=22050,bpm=108,stepTime=60/bpm/2;
+ const length=Math.round(stepTime*32*rate),buffer=audio.createBuffer(1,length,rate),data=buffer.getChannelData(0);
+ const chords=[[261.63,329.63,392.00],[220.00,261.63,329.63],[174.61,220.00,261.63],[196.00,246.94,293.66]];
+ const melody=[523.25,659.25,783.99,880.00,783.99,659.25,523.25,392.00,440.00,523.25,659.25,783.99,659.25,523.25,392.00,523.25];
+ function synth(start,frequency,kind){
+  const duration=kind==='xylo'?.2:kind==='pluck'?.09:1.3;
+  const begin=Math.round(start*rate),count=Math.ceil(duration*rate);
+  let phase=0;
+  for(let i=0;i<count;i++){
+   const t=i/rate;let envelope,f=frequency;
+   if(kind==='xylo'){
+    envelope=t<.02?mix(.0001,.04,t/.02):t<.18?.04*Math.pow(.0001/.04,(t-.02)/.16):.0001;
+   }else if(kind==='pluck'){
+    f=frequency*Math.pow(.5,Math.min(t,.08)/.08);
+    envelope=t<.08?.05*Math.pow(.0001/.05,t/.08):.0001;
+   }else{
+    envelope=t<.3?mix(.0001,.025,t/.3):t<1.2?.025*Math.pow(.0001/.025,(t-.3)/.9):.0001;
+   }
+   // 波形と包絡は提示コードに合わせ、発音末尾だけ短く消音。
+   const wave=kind==='pluck'?2/Math.PI*Math.asin(Math.sin(phase)):Math.sin(phase);
+   data[(begin+i)%length]+=wave*envelope*Math.min(1,(duration-t)/.004);
+   phase+=TAU*f/rate;
+  }
+ }
+ for(let step=0;step<32;step++){
+  const start=step*stepTime;
+  if(step%2===0)synth(start,melody[step/2],'xylo');
+  if(step%4===1||step%4===3)synth(start,step%8===1?261.63:349.23,'pluck');
+  if(step%8===0)for(const frequency of chords[step/8])synth(start,frequency*.5,'recorder');
+ }
+ const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+ source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=3800;
+ gain.gain.value=0;source.connect(filter);filter.connect(gain);gain.connect(audio.destination);
+ source.start();bgmAudio={source,filter,gain};
+}
+function updateBGM(){if(!bgmAudio||!audio)return;const target=bgmEnabled&&running&&!paused&&!document.hidden?.32:0;if(bgmAudio.target===target)return;bgmAudio.target=target;bgmAudio.gain.gain.setTargetAtTime(target,audio.currentTime,.35);}
+$('bgmToggle').onclick=()=>{bgmEnabled=!bgmEnabled;$('bgmToggle').textContent=bgmEnabled?'BGM ON':'BGM OFF';if(bgmEnabled)wake();updateBGM()};
+$('plateColour').oninput=e=>ceramic.color.set(e.target.value);
+$('previousStep').onclick=()=>{if(!running||paused||complete||stage<=0)return;setStage(stage===5?3:stage-1);toast('前の工程に戻りました。この工程の操作は最初から行えます')};
+function initKitchenAudio(){if(!audio||kitchenAudio)return;const bus=audio.createGain();bus.gain.value=.65;bus.connect(audio.destination);const buffer=audio.createBuffer(1,audio.sampleRate*2,audio.sampleRate),data=buffer.getChannelData(0);let brown=0;for(let i=0;i<data.length;i++){brown=(brown+(Math.random()*2-1)*.025)/1.025;data[i]=brown*5}const noise=audio.createBufferSource();noise.buffer=buffer;noise.loop=true;const filter=audio.createBiquadFilter();filter.type='lowpass';filter.frequency.value=950;const ng=audio.createGain();ng.gain.value=0;noise.connect(filter);filter.connect(ng);ng.connect(bus);noise.start();const motor=audio.createOscillator();motor.type='triangle';motor.frequency.value=145;const mg=audio.createGain();mg.gain.value=0;motor.connect(mg);mg.connect(bus);motor.start();kitchenAudio={bus,filter,ng,mg,motor,liquidBuffer:buffer};}
+// A short, soft ceramic knock only when a new dish is placed.
+function kitchenDishSE(){
+ if(!audio||!kitchenAudio||!sound||paused||!running)return;
+ const at=audio.currentTime;
+ for(const [frequency,level,duration] of [[480,.045,.12],[930,.014,.07]]){
+  const oscillator=audio.createOscillator(),gain=audio.createGain();
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(frequency,at);oscillator.frequency.exponentialRampToValueAtTime(frequency*.88,at+duration);
+  gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(level,at+.004);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  oscillator.connect(gain);gain.connect(kitchenAudio.bus);oscillator.start(at);oscillator.stop(at+duration+.01);oscillator.onended=()=>{oscillator.disconnect();gain.disconnect()};
+ }
+}
+// Small, event-driven liquid voices. The shared bus respects the sound switch.
+// No audio files, permanent extra oscillators or per-frame node allocation.
+const liquidLast=Object.create(null);
+function kitchenLiquidSE(kind,intensity=1){
+ if(!audio||!kitchenAudio||!sound||paused||!running)return;
+ const now=audio.currentTime,interval=kind==='stir'?.29:kind==='syrup'?.23:kind==='hand'?.25:.20;
+ if(now-(liquidLast[kind]??-10)<interval)return;liquidLast[kind]=now;
+ const pulses=kind==='water'?5:kind==='plop'?2:kind==='stir'?2:3;
+ const strength=clamp(intensity,.25,1);
+ for(let i=0;i<pulses;i++){
+  const at=now+i*(kind==='water'?.10:kind==='syrup'?.075:.065),duration=kind==='plop'?.19:.12+Math.random()*.045;
+  const osc=audio.createOscillator(),gain=audio.createGain();
+  const f=(kind==='plop'?175:kind==='syrup'?235:kind==='stir'?390:320)*(1+Math.random()*.35);
+  osc.type='sine';osc.frequency.setValueAtTime(f,at);osc.frequency.exponentialRampToValueAtTime(f*(kind==='plop'?.43:.68),at+duration);
+  gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime((kind==='plop'?.080:kind==='syrup'?.050:.035)*strength,at+.009);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  osc.connect(gain);gain.connect(kitchenAudio.bus);osc.start(at);osc.stop(at+duration+.01);osc.onended=()=>{osc.disconnect();gain.disconnect()};
+  const splash=audio.createBufferSource(),filter=audio.createBiquadFilter(),ng=audio.createGain();splash.buffer=kitchenAudio.liquidBuffer;
+  filter.type='bandpass';filter.frequency.value=kind==='plop'?460:kind==='syrup'?650:kind==='stir'?1300:1800;filter.Q.value=kind==='stir'?1.1:.65;
+  // Soft metal-on-bowl texture accompanies the liquid swish during spoon movement.
+  if(kind==='stir'&&i===0){const tap=audio.createOscillator(),tg=audio.createGain();tap.type='sine';tap.frequency.setValueAtTime(1650+Math.random()*200,at);tg.gain.setValueAtTime(.0001,at);tg.gain.exponentialRampToValueAtTime(.010*strength,at+.003);tg.gain.exponentialRampToValueAtTime(.0001,at+.055);tap.connect(tg);tg.connect(kitchenAudio.bus);tap.start(at);tap.stop(at+.06);tap.onended=()=>{tap.disconnect();tg.disconnect()};}
+  ng.gain.setValueAtTime(.0001,at);ng.gain.exponentialRampToValueAtTime((kind==='plop'?.014:kind==='syrup'?.018:.038)*strength,at+.012);ng.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  splash.connect(filter);filter.connect(ng);ng.connect(kitchenAudio.bus);splash.start(at,Math.random()*.8);splash.stop(at+duration+.01);splash.onended=()=>{splash.disconnect();filter.disconnect();ng.disconnect()};
+ }
+}
+function cookingSE(active,time){if(!kitchenAudio||!audio)return;if(time-(kitchenAudio.lastUpdate??-1)<.05)return;kitchenAudio.lastUpdate=time;let noise=0,motor=0,hz=145,cut=800;const acting=active&&ptr.down;
+// Keep only pouring, electric mixing, heating, dusting and brushing. Gentle fades avoid clicks.
+if(active&&stage===1&&acting&&whipDrag.kind==='mix'&&Math.abs(bowlTilt)>=.10&&progress<1){motor=.022;noise=.016;hz=170;cut=1000;}
+if(active&&stage===2){noise=syrupPower*.016+Math.max(0,heat-75)/35*.014;cut=850;// Ingredient pours use distinct splash/plop voices instead of generic noise.
+}
+if(active&&stage===3){if(stream.visible){kitchenLiquidSE('syrup',.8);cut=700;}if(mixFX.visible){motor=.022;noise=.018;hz=combinePhase==='gelatinMix'?110:170;cut=1050;}}
+if(acting&&stage===7&&Math.abs(ptr.x)<1.8&&Math.abs(ptr.z)<1.2){noise=.022;cut=1800;}
+if(acting&&stage===9&&pieces.some(p=>nearPiece(p,.4))){noise=.018;cut=1400;}
+const at=audio.currentTime;kitchenAudio.bus.gain.setTargetAtTime(sound?.65:0,at,.10);kitchenAudio.ng.gain.setTargetAtTime(noise*(.98+.02*Math.sin(time*9)),at,.10);kitchenAudio.mg.gain.setTargetAtTime(motor,at,.12);kitchenAudio.motor.frequency.setTargetAtTime(hz+Math.sin(time*6)*2,at,.12);kitchenAudio.filter.frequency.setTargetAtTime(cut,at,.12);}
+function utensilSE(kind='glass'){return; /* Dish contact sounds intentionally disabled. */ if(!sound||!audio)return;const o=audio.createOscillator(),g=audio.createGain(),at=audio.currentTime;o.type='sine';o.frequency.setValueAtTime(kind==='plate'?1350:2100,at);o.frequency.exponentialRampToValueAtTime(kind==='plate'?720:1100,at+.16);g.gain.setValueAtTime(.035,at);g.gain.exponentialRampToValueAtTime(.0001,at+.22);o.connect(g);g.connect(audio.destination);o.start();o.stop(at+.23);} 
+function wake(){try{audio??=new(window.AudioContext||window.webkitAudioContext)();initKitchenAudio();initBGM();audio.resume().then(updateBGM).catch(()=>{})}catch{}}function tone(freq=580){return; /* Notification tones intentionally disabled. */ if(!sound||!audio)return;const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(freq*.75,t+.13);g.gain.setValueAtTime(.025,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g);g.connect(audio.destination);o.start();o.stop(t+.2)}function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2500)}
+const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-.2),hit=new T.Vector3(),ptr={x:0,z:0,lastX:0,lastZ:0,down:false,id:null,valid:false};
+function project(e){const r=workViewport;ndc.set((e.clientX-r.x)/r.width*2-1,-(e.clientY-r.y)/r.height*2+1);ray.setFromCamera(ndc,camera);const p=ray.ray.intersectPlane(plane,hit);ptr.valid=!!p&&e.clientX>=r.x&&e.clientX<=r.x+r.width&&e.clientY>=r.y&&e.clientY<=r.y+r.height;if(p){ptr.x=p.x;ptr.z=p.z}}
+function release(){if(stage===6&&ptr.down&&smoothStroke?.straight){smoothStroke.elapsed=1;emitPiping(0);}if(outlineStroke)finishOutline();if(pipeTarget&&stage===6)fusionPending=performance.now()+180;smoothStroke=null;pipeStrokePlane=null;pipeTarget=null;pipeLast=null;orbiting=false;orbitId=null;cancelColourDrag();cancelCombineDrag();cancelSyrupDrag();soakHandDistance=0;canvas.style.cursor='default';cancelWhipDrag();if(prepDrag.kind)restorePrepDrag();if(selected&&stage===10){if(selected.userData.plated){selected.position.set(selected.userData.plateX,selected.userData.plateY??.16,selected.userData.plateZ)}else{tray.attach(selected);selected.position.set(selected.userData.x,.107,selected.userData.z);selected.scale.setScalar(selected.userData.size*selected.userData.fill)}}if(activePiece){activePiece.userData.fill=Math.max(.65,activePiece.userData.fill);activePiece.scale.setScalar(activePiece.userData.size*activePiece.userData.fill);activePiece=null}if(ptr.id!==null&&canvas.hasPointerCapture(ptr.id)){try{canvas.releasePointerCapture(ptr.id)}catch{}}ptr.down=false;ptr.id=null;selected=null;if(kitchenAudio&&audio){kitchenAudio.ng.gain.setTargetAtTime(0,audio.currentTime,.025);kitchenAudio.mg.gain.setTargetAtTime(0,audio.currentTime,.025)}}
+function paletteUI(){document.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('selected',b.dataset.color===color));if(stage!==5)foamMaterial.color.set(color)}
+function setStage(s){release();touchMove=false;$('touchMove').setAttribute('aria-pressed','false');document.body.classList.remove('touch-tools-open','touch-help-open');$('touchTools').setAttribute('aria-pressed','false');$('touchHelp').setAttribute('aria-pressed','false');if(s<7)removeCreamFusion();workspaceStage=s;document.body.classList.toggle('piping-layout',s===6);document.body.classList.toggle('colouring-layout',s===5);dishPagination.classList.toggle('hidden',s!==5);restoreTopView();$('toolChoice').classList.add('hidden');$('dishShelf').classList.toggle('hidden',s!==6);if(s!==6)bag.scale.setScalar(1);stage=s;progress=0;age=0;$('previousStep').classList.remove('hidden');$('previousStep').disabled=s===0;$('plateColourUI').classList.toggle('hidden',s!==10);const v=stages[s];$('title').textContent=String(s>=5?s:s+1).padStart(2,'0')+' / '+v[0];$('instruction').textContent=v[1];$('label').textContent=v[2];$('stepList').textContent=`STEP ${s>=5?s:s+1} / ${stages.length-1}`;bowl.visible=[1,3,4,5].includes(s);whisk.visible=s===4;handMixer.visible=s===1||s===3;sugarCups.forEach(c=>c.visible=s===1&&!c.userData.used);if(s!==1){bowl.rotation.set(0,0,0);stiffPeak.visible=false;}combineRibbons.visible=false;mixFX.visible=false;pourDroplets.visible=false;saucepan.visible=s===2||s===3;saucepan.children[4].visible=s!==3;syrupStation.visible=s===2;syrupAddition.visible=s===2;if(s===2){saucepan.position.x=saucepan.position.z=0;resetSyrup()}else{saucepan.position.set(0,0,0);saucepan.rotation.set(0,0,0)}tray.visible=s>=6;plate.visible=s===10;gelatin.visible=false;prep.visible=s===0;smallBowl.visible=s===0;prepSpoon.visible=false;bag.visible=false;brush.visible=s===9;shaker.visible=s===7;stream.visible=false;combineRipples.visible=false;$('palette').classList.toggle('hidden',s!==5&&s!==6);$('pipeOptions').classList.add('hidden');$('pipeHelp').classList.toggle('hidden',s!==6);$('swatches').classList.toggle('hidden',s===5||s===6);$('progress').classList.toggle('hidden',s===5||s===6||s===10);tray.position.set(0,0,0);tray.scale.setScalar(1);plate.position.set(1.08,0,0);plate.scale.setScalar(.84);colouringStation.visible=s===5;bowl.position.set(s===5?1.03:0,0,s===5?-.65:0);bowl.scale.setScalar(s===5?.78:1);$('palette').classList.toggle('colouring',s===5);$('colourTools').classList.toggle('hidden',s!==5);$('swatches').classList.toggle('hidden',s===5);$('colourName').textContent=s===5?'色名はカラー瓶を選ぶと表示されます':'選択した色で絞り出します';$('paletteTitle').textContent=s===5?'⑤ 小皿とアイシングカラー':'生地の色';if(s===5){foam.scale.set(1,.6,1);foam.position.y=.32;foamMaterial.color.set('#f1e4d2');foamBubbles.visible=false;stiffPeak.visible=false;if(!colourDishes.length)newColourDish();showDishPage();toast('左上の小皿へ、右のボウルから少量取り分けましょう')}if(s===6){$('title').textContent='06/形を作る';$('instruction').textContent='左の小皿を選び、絞り袋で本体、コルネで顔や模様を描きましょう。左長押し・ドラッグで描画、右ドラッグで視点回転。WASDで移動、ホイールでズームできます。軽量な「輪郭を囲んで塗りつぶす」では水平面に輪郭を描き、離すと自動で閉じて丸みと厚みを付けます。線の太さで厚みを調整。コルネは表面に薄く描画します。立体部分は3Dペンに切り替えられます。Ctrl+Zで取り消し。作り終えたら右下から次へ。';pipingTool=null;loadedDish=null;renderDishShelf();$('toolStatus').textContent='左の小皿をクリックして道具を選択';$('paletteTitle').textContent='⑥ 形を作る';$('swatches').classList.add('hidden');basePowder();for(let i=0;i<650;i++)addPowder((rand()-.5)*3.49,.124,(rand()-.5)*2.39);toast('左で小皿と道具を選びましょう。右ドラッグはこの工程だけ360°視点回転')}if(s===7){joinTouchingMarshmallows();fusionPending=0;liveFusionDirty=false;prepareDustColours();dustCoverage.clear();toast('接している本体とパーツをまとめました。押したまま動かして上から粉を振りましょう')}if(s===3)resetCombine();if(s===0){resetPrep()}if(s===1){resetWhip();foam.scale.set(1,.08,1);foamMaterial.color.set('#e7dfc4')}if(s===10){tray.position.x=-1.08;tray.scale.setScalar(.52);plate.position.x=1.08;toast('左から右へ、お皿にドラッグして盛り付けましょう')}zoomView(2/3);updateUI();resize()}
+function next(){if(stage<10){tone(740);setStage(stage===3?5:stage+1)}}
+function skipForward(){if(!running||paused||complete)return;if(stage===5&&chosenDish?.userData.filled){selectColourDish(chosenDish)}if(stage===6){if(activePiece)release();pieces.forEach(p=>p.userData.baseColor='#'+p.userData.material.color.getHexString())}if(stage===7)pieces.forEach(p=>{p.userData.baseColor??='#'+p.userData.material.color.getHexString()});if(stage===10){release();const unplated=pieces.filter(p=>!p.userData.plated);unplated.forEach((p,i)=>{scene.attach(p);const r=unplated.length<2?0:.48*Math.sqrt((i+.5)/unplated.length),a=i*2.399;p.position.set(plate.position.x+Math.cos(a)*r,.16,plate.position.z+Math.sin(a)*r);p.scale.setScalar(p.userData.size*.66);p.userData.plated=true;seatOnPlate(p,true)});finish();return}next()}
+function platedCount(){return pieces.filter(p=>p.userData.plated).length}
+function seatOnPlate(p,allowStack=true){scene.updateMatrixWorld(true);const bounds=new T.Box3().setFromObject(p);let surface=plate.position.y+.1025*plate.scale.y;if(allowStack){const probe=new T.Raycaster(new T.Vector3(p.position.x,20,p.position.z),new T.Vector3(0,-1,0));const hits=probe.intersectObjects(pieces.filter(q=>q!==p&&q.userData.plated),true).filter(h=>h.object.visible);if(hits.length)surface=Math.max(surface,hits[0].point.y);}if(Number.isFinite(bounds.min.y))p.position.y+=surface-bounds.min.y+.0005;p.updateMatrixWorld(true);p.userData.plateX=p.position.x;p.userData.plateY=p.position.y;p.userData.plateZ=p.position.z;}
+
+function updateUI(){const p=clamp(progress);$('fill').style.width=p*100+'%';$('progress').setAttribute('aria-valuenow',Math.round(p*100));let txt=`${Math.round(p*100)}%`;if(stage===0){const soaked=prepSheets.filter(s=>s.userData.soak>=1).length,transferred=prepSheets.filter(s=>s.userData.inSmall).length;txt=bathing?`スプーンで混ぜて湯煎 · 溶け具合 ${Math.round(meltAmount*100)}%${ptr.down&&inHotSmallBowl()?' · 混ぜています':' · 小さいボウルの中をドラッグ'}`:transferred===3?'小さいボウルを右のお湯へドラッグしてください':soaked===3?`ふやけました · 小さいボウルへ ${transferred} / 3 枚`:`手で浸してふやかす ${Math.floor(Math.min(...prepSheets.map(s=>s.userData.soak))*100)}% · 冷水の中を押したままドラッグ`;}if(stage===1){const waiting=(sugar===0&&progress>=.32)||(sugar===1&&progress>=.66);txt=progress>=1?'ピン！と角が立ちました · 次の工程へ進めます':waiting?`白くふんわりしました · 上の砂糖（${sugar+1}回目）をボウルへドラッグ`:`高速攪拌 ${Math.round(p*100)}% · 砂糖 ${sugar} / 2回 · ${Math.abs(bowlTilt)>=.10?'ボウルの傾き OK':'縁を左右にドラッグして傾ける'}`;}if(stage===2){const added=syrupIngredients.filter(c=>c.userData.used).length;txt=`材料 ${added} / 3 · ${heat.toFixed(1)}℃ / 110℃ · 火力 ${Math.round(syrupPower*100)}% · 混ざり具合 ${Math.round(syrupBlend*100)}%${added<3?' · 上の材料を鍋へ':syrupPower===0?' · 右のダイヤルで点火':''}`;}if(stage===3){txt=combinePhase==='pour'?`シロップ投入 ${Math.round(combinePour*100)}% · 上の鍋を手前へドラッグして高い位置から注ぐ`:combinePhase==='syrupMix'?`高速攪拌 ${combineSeconds.toFixed(1)} / 30秒 · ${combineTimerStarted?'カウント中（手を止めても進みます）':'ボウル内をドラッグして計測開始'}`:combinePhase==='gelatin'?'上の小鉢の溶かしゼラチンを中央のボウルへドラッグ':combinePhase==='gelatinPour'?'溶かしゼラチンを投入中 · 金色の流れが生地に広がります':`ゼラチンを軽く攪拌 ${combineSeconds.toFixed(1)} / 10秒 · ${combineTimerStarted?'カウント中（手を止めても進みます）':'ボウル内をドラッグして計測開始'}`;}
+if(stage===5){updateColourInfo();txt=`小皿 ${colourDishes.length}枚 · 選択中の小皿の色を絞り出しに使います · 未完了でも右下から次へ進めます`;}  if(stage===6)txt=`本体 ${pieces.length}個 · 個数制限なし · ${pipingTool==='cornet'?'コルネで細部を飾る':pipingTool==='bag'?'絞り袋で自由に形作る':'左の小皿を選択'} · 右ドラッグで360°回転`; if(stage===7)txt=`粉を振ったマシュマロ ${dustCoverage.size} / ${pieces.length} 個`;if(stage===8)txt=`形が落ち着くまで あと${Math.ceil((1-p)*5)}秒`;if(stage===9)txt=`粉払い ${pieces.filter(p=>p.userData.clean>=1).length} / ${pieces.length} 個`;if(stage===10)txt=`盛り付け ${platedCount()} / ${pieces.length} 個`;$('metric').textContent=txt;const enabled=(stage===1&&progress>=1)||stage===5||(stage===6&&pieces.length>=3&&!activePiece)||(stage===10&&pieces.length>0&&platedCount()===pieces.length);$('next').classList.toggle('hidden',complete);$('next').disabled=!running||paused||complete;$('next').textContent=stage===10?'盛り付けて完成！ ✧':'次の工程へ →';$('next').title='この工程が未完了でも進めます' }
+function reset(){pipeRedoHistory.length=0;endSquish();squishStates.clear();release();for(const d of colourDishes){colouringStation.remove(d);d.traverse(o=>{if(o.isMesh){o.geometry.dispose();if(o.material!==steel)o.material.dispose()}})}colourDishes.length=0;chosenDish=null;dishPage=0;disposePieces();basePowder();dustCoverage.clear();running=true;paused=false;complete=false;photo=false;sugar=0;heat=22;whipDistance=0;foamMaterial.roughness=.35;foamMaterial.bumpScale=.008;color='#f0cfce';shape='round';size=1;$('shape').value=shape;$('size').value=1;for(const id of ['intro','finish','pauseOverlay','viewBack'])$(id).classList.add('hidden');for(const id of ['card','reference'])$(id).classList.remove('hidden');document.querySelector('header').classList.remove('hidden');$('pause').textContent='一時停止';paletteUI();setStage(0)}
+function togglePause(){if(!running||complete||photo)return;release();zoomView(2/3);paused=!paused;$('pauseOverlay').classList.toggle('hidden',!paused);$('pause').textContent=paused?'再開':'一時停止'}
+const pipeHelp=document.createElement('div');pipeHelp.id='pipeHelp';pipeHelp.className='hidden';pipeHelp.innerHTML='<p id="toolStatus">左の小皿から道具を選択</p><label>絞る道具</label><div><button id="switchBag">絞り袋</button> <button id="switchCornet">コルネ</button></div><p>左長押し：生地を絞る<br>左ドラッグ：線や形を作る<br>右ドラッグ：四方八方に視点回転<br>WASD：画面の上下左右に移動<br>ホイール：拡大・縮小</p><label for="pipeDrawMode">描き方</label><div id="pipeDrawMode" class="model-buttons" role="group" aria-label="描き方"><button type="button" data-mode="outline" aria-pressed="true">輪郭を囲んで塗りつぶす</button><button type="button" data-mode="space" aria-pressed="false">立体に描く</button><button type="button" data-mode="surface" aria-pressed="false">表面に沿って描く</button></div><p>3Dペン：視点を斜め・横へ回し、長押しドラッグで空中にも線を描けます。ひと筆ごとに描画面が固定されます。視点を変えて描き足すと、奥行きのある形になります。コルネは本体の表面に密着して描きます（空中や本体のない場所には描けません）。</p><label for="pipeThickness">線の太さ <output id="thicknessValue">100pt</output></label><input id="pipeThickness" aria-label="線の太さ（0ptから200pt）" type="range" min="0" max="200" step="1" value="100"><label for="pipeHeight">絞る高さ <output id="heightValue">0 mm</output></label><input id="pipeHeight" type="range" min="0" max="2" step="0.02" value="0"><p>高さはひと筆の開始位置に反映されます。3Dペンでは横から上方向へ描くと立ち上がる線に。空中に描いた生地は落下しない、自由造形モードです。最大ズームは2000％。真上へ戻すとカメラ位置もリセットされます。</p><button id="undoPipe" title="Ctrl+Z / ⌘Z">一つ前に戻る（Ctrl+Z）</button> <button id="clearPipe">すべてやり直す</button><button id="resetPipeView">真上の視点に戻す</button>';$('palette').append(pipeHelp);$('switchBag').onclick=()=>{if(paused)return;pendingDish=loadedDish;loadPipingTool('bag')};$('switchCornet').onclick=()=>{if(paused)return;pendingDish=loadedDish;loadPipingTool('cornet')};$('resetPipeView').textContent='正面に戻る';$('resetPipeView').onclick=()=>{release();orbitYaw=0;orbitPitch=.85;cameraPan.set(0,0,0);cameraKeys.clear();orbitCamera()};$('pipeDrawMode').onclick=e=>{const button=e.target.closest('button[data-mode]');if(!button||paused)return;release();pipeDrawMode=button.dataset.mode;for(const b of $('pipeDrawMode').querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===button));toast(pipeDrawMode==='outline'?'水平面に輪郭を描き、離すと閉じて厚みを付けます':pipeDrawMode==='space'?'視点を変えて立体的に描けます':'本体の表面に沿って描きます');button.blur()};$('pipeThickness').oninput=e=>{pipeThickness=Number(e.target.value)/100;$('thicknessValue').textContent=e.target.value+'pt'};$('pipeHeight').oninput=e=>{pipeHeight=Number(e.target.value);$('heightValue').textContent=Math.round(pipeHeight*100)+' mm'};$('undoPipe').onclick=undoPipe;$('clearPipe').onclick=clearPiping;
+const redoButton=document.createElement('button');redoButton.id='redoPipe';redoButton.textContent='先に進む';redoButton.title='取り消した操作を元に戻す（Ctrl+Shift+Z / Ctrl+Y / ⌘Shift+Z）';redoButton.onclick=redoPipe;pipeHelp.insertBefore(redoButton,$('clearPipe'));updatePipeHistoryButtons();
+$('undoPipe').textContent='前に戻る';$('clearPipe').textContent='最初からやり直す';$('clearPipe').title='形作りをすべて消去します。「前に戻る」で復元できます';
+const stampLabel=document.createElement('label');stampLabel.htmlFor='creamShape';stampLabel.textContent='図形';const stampSelect=document.createElement('div');stampSelect.id='creamShape';stampSelect.className='model-buttons';stampSelect.setAttribute('role','group');stampSelect.setAttribute('aria-label','図形');for(const [value,text] of [['free','自由線'],['line','直線'],['circle','球'],['square','角丸長方形'],['triangle','三角'],['star','星'],['heart','ハート']]){const option=document.createElement('button');option.type='button';option.dataset.shape=value;option.textContent=text;option.setAttribute('aria-pressed',String(value===stampShape));stampSelect.append(option)}pipeHelp.insertBefore(stampLabel,$('pipeThickness').previousElementSibling);pipeHelp.insertBefore(stampSelect,$('pipeThickness').previousElementSibling);stampSelect.onclick=e=>{const button=e.target.closest('button[data-shape]');if(!button||paused)return;release();stampShape=button.dataset.shape;for(const b of stampSelect.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===button));toast(stampShape==='line'?'押した位置を始点に、離す位置を終点として直線を描きます':stampShape==='free'?'自由に描けます。輪郭の塗りつぶしは自由線で囲んでください':'クリックで図形を配置します。サイズは線の太さと連動します');button.blur()};
+// Put the longer help text behind a disclosure so settings remain a shallow top toolbar.
+const pipeDetails=document.createElement('details');pipeDetails.id='pipeDetails';const pipeSummary=document.createElement('summary');pipeSummary.textContent='操作説明・3Dペンのヒント';pipeDetails.append(pipeSummary);for(const p of [...pipeHelp.querySelectorAll(':scope > p')])if(p.id!=='toolStatus')pipeDetails.append(p);pipeHelp.append(pipeDetails);pipeDetails.addEventListener('toggle',()=>{if(workspaceStage===6)resize()});
+const workLayoutObserver=new ResizeObserver(()=>{if(workspaceStage===6)resize()});workLayoutObserver.observe($('palette'));workLayoutObserver.observe($('card'));workLayoutObserver.observe($('dishShelf'));
+const paletteColors=icingColours;$('swatches').innerHTML=paletteColors.map(([c,n])=>`<button class="swatch" style="background:${c}" data-color="${c}" aria-label="${n}"></button>`).join('');$('swatches').onclick=e=>{const b=e.target.closest('[data-color]');if(!b||paused)return;color=b.dataset.color;paletteUI();tone(520)};$('shape').onchange=e=>shape=e.target.value;$('size').oninput=e=>size=Number(e.target.value);
+// Join connected components without changing colour, geometry or world positions.
+function joinTouchingMarshmallows(){scene.updateMatrixWorld(true);const original=[...pieces],parent=original.map((_,i)=>i);const root=i=>parent[i]===i?i:(parent[i]=root(parent[i]));const surfaces=original.map(p=>{const nodes=[];p.traverse(o=>{if(!o.isMesh)return;const bounds=new T.Box3().setFromObject(o);nodes.push(bounds)});return nodes});
+for(let a=0;a<original.length;a++)for(let b=a+1;b<original.length;b++){if(root(a)===root(b))continue;const touching=surfaces[a].some(aa=>surfaces[b].some(bb=>aa.clone().expandByScalar(.003).intersectsBox(bb)));if(touching)parent[root(b)]=root(a)}
+const groups=new Map();original.forEach((p,i)=>{const r=root(i);if(!groups.has(r))groups.set(r,[]);groups.get(r).push(p)});pieces.length=0;
+for(const members of groups.values()){const target=members[0];for(const other of members.slice(1)){for(const child of [...other.children])target.attach(child);other.parent?.remove(other)}const bounds=new T.Box3().setFromObject(target),center=bounds.getCenter(new T.Vector3()),old=target.getWorldPosition(new T.Vector3()),localCenter=tray.worldToLocal(new T.Vector3(center.x,old.y,center.z));const shift=localCenter.clone().sub(target.position);target.position.copy(localCenter);for(const child of target.children)child.position.sub(shift);target.userData.x=target.position.x;target.userData.z=target.position.z;target.userData.clean=0;target.userData.dusting=0;pieces.push(target)}pipeHistory.length=0;pipeRedoHistory.length=0;updatePipeHistoryButtons();}
+function prepareDustColours(){for(const p of pieces)p.traverse(o=>{if(!o.isMesh)return;const m=o.material;if(!m.userData.dustBase){m.userData.dustBase=m.color.clone();m.userData.dustRough=m.roughness}})}
+function paintDust(p,amount){const visited=new Set();p.traverse(o=>{if(!o.isMesh||visited.has(o.material))return;const m=o.material;visited.add(m);if(!m.userData.dustBase){m.userData.dustBase=m.color.clone();m.userData.dustRough=m.roughness}m.color.copy(m.userData.dustBase).lerp(new T.Color('#e5dfd5'),clamp(amount)*.67);m.roughness=mix(m.userData.dustRough,.99,clamp(amount))})}
+// Tiny translucent point sprites fall from above and land on the actual surface.
+const fallCanvas=document.createElement('canvas');fallCanvas.width=fallCanvas.height=32;const fallCtx=fallCanvas.getContext('2d'),gradient=fallCtx.createRadialGradient(16,16,0,16,16,16);gradient.addColorStop(0,'rgba(255,255,255,.9)');gradient.addColorStop(.35,'rgba(255,255,255,.65)');gradient.addColorStop(1,'rgba(255,255,255,0)');fallCtx.fillStyle=gradient;fallCtx.fillRect(0,0,32,32);const fallTexture=new T.CanvasTexture(fallCanvas),fallGeometry=new T.BufferGeometry(),fallPositions=new Float32Array(2400*3);fallGeometry.setAttribute('position',new T.BufferAttribute(fallPositions,3));fallGeometry.setDrawRange(0,0);const fallingStarch=new T.Points(fallGeometry,new T.PointsMaterial({color:'#e8e0d3',size:2.4,sizeAttenuation:false,map:fallTexture,transparent:true,opacity:.64,depthWrite:false}));fallingStarch.frustumCulled=false;scene.add(fallingStarch);const siftParticles=[];let siftBudget=0;const siftRay=new T.Raycaster();
+function updateSifting(dt){if(ptr.down&&ptr.valid&&Math.abs(ptr.x)<1.7&&Math.abs(ptr.z)<1.15){siftBudget+=dt*720;const amount=Math.floor(siftBudget);siftBudget-=amount;scene.updateMatrixWorld(true);for(let n=0;n<amount&&siftParticles.length<2400;n++){const x=ptr.x+(rand()-.5)*.28,z=ptr.z+(rand()-.5)*.28;siftRay.set(new T.Vector3(x,5,z),new T.Vector3(0,-1,0));const hits=siftRay.intersectObjects(pieces,true);let target=null;if(hits.length){target=hits[0].object;while(target&&!pieces.includes(target))target=target.parent}const floor=hits.length?hits[0].point.y+.004:.124;siftParticles.push({x,z,y:Math.max(1.65,floor+.65)+rand()*.20,floor,target,speed:.9+rand()*.6,phase:rand()*TAU})}}
+for(let i=siftParticles.length-1;i>=0;i--){const p=siftParticles[i];p.y-=dt*p.speed;if(p.y<=p.floor){if(p.target&&pieces.includes(p.target)){const u=p.target.userData;u.dusting=clamp((u.dusting||0)+.006);paintDust(p.target,u.dusting);if(u.dusting>=.98)dustCoverage.add(p.target)}else if(rand()<.1)addPowder(p.x,.125,p.z);siftParticles.splice(i,1)}}
+for(let i=0;i<siftParticles.length;i++){const p=siftParticles[i];fallPositions[i*3]=p.x+Math.sin(p.y*7+p.phase)*.006;fallPositions[i*3+1]=p.y;fallPositions[i*3+2]=p.z}fallGeometry.attributes.position.needsUpdate=true;fallGeometry.setDrawRange(0,siftParticles.length);}
+// Photo mode: local, spring-damped deformation; recipe geometry stays unchanged after recovery.
+const squishStates=new Map();let squishHeld=null,squishPointer=null;
+function endSquish(){squishHeld=null;const id=squishPointer;squishPointer=null;if(id!==null&&canvas.hasPointerCapture(id))canvas.releasePointerCapture(id)}
+function squishHit(e){const rect=canvas.getBoundingClientRect();const uv=new T.Vector2((e.clientX-rect.left)/rect.width*2-1,1-(e.clientY-rect.top)/rect.height*2);scene.updateMatrixWorld(true);const probe=new T.Raycaster();probe.setFromCamera(uv,camera);return probe.intersectObjects(pieces,true).find(h=>h.object.isMesh&&h.object.visible&&h.face)}
+function targetSquish(h){const mesh=h.object;let state=squishStates.get(mesh);if(!state){const attr=mesh.geometry.attributes.position;state={mesh,base:attr.array.slice(),point:new T.Vector3(),normal:new T.Vector3(),amount:0,velocity:0,tick:0,radius:.18};squishStates.set(mesh,state)}
+state.point.copy(mesh.worldToLocal(h.point.clone()));
+// Interpolated vertex normals prevent a faceted or sideways push at triangle edges.
+state.normal.copy(h.face.normal);
+const geometry=mesh.geometry,normalAttr=geometry.attributes.normal,positionAttr=geometry.attributes.position;
+if(normalAttr&&h.face){const a=new T.Vector3().fromBufferAttribute(positionAttr,h.face.a),b=new T.Vector3().fromBufferAttribute(positionAttr,h.face.b),c=new T.Vector3().fromBufferAttribute(positionAttr,h.face.c),weights=new T.Vector3();new T.Triangle(a,b,c).getBarycoord(state.point,weights);if([weights.x,weights.y,weights.z].every(Number.isFinite)){state.normal.set(0,0,0);for(const [index,weight] of [[h.face.a,weights.x],[h.face.b,weights.y],[h.face.c,weights.z]])state.normal.addScaledVector(new T.Vector3().fromBufferAttribute(normalAttr,index),weight);}}
+state.normal.normalize();
+if(!geometry.boundingBox)geometry.computeBoundingBox();state.bottom=geometry.boundingBox.min.y;state.top=geometry.boundingBox.max.y;
+const scale=mesh.getWorldScale(new T.Vector3());state.radius=.23/Math.max(.001,Math.max(Math.abs(scale.x),Math.abs(scale.y),Math.abs(scale.z)));squishHeld=state;}
+canvas.addEventListener('pointerdown',e=>{if(!complete||!photo||e.button!==0||squishPointer!==null)return;const h=squishHit(e);if(!h)return;e.preventDefault();squishPointer=e.pointerId;targetSquish(h);canvas.setPointerCapture(e.pointerId)},true);
+canvas.addEventListener('pointermove',e=>{if(e.pointerId!==squishPointer||!squishHeld)return;const h=squishHit(e);if(h&&h.object===squishHeld.mesh){const next=h.object.worldToLocal(h.point.clone());squishHeld.point.lerp(next,.25)}},true);
+canvas.addEventListener('pointerup',e=>{if(e.pointerId===squishPointer)endSquish()},true);
+canvas.addEventListener('pointercancel',endSquish,true);canvas.addEventListener('lostpointercapture',endSquish);window.addEventListener('blur',endSquish);
+function updateSquish(dt){if(!complete||!photo||orbiting)squishHeld=null;
+for(const [mesh,s] of squishStates){if(!mesh.parent){squishStates.delete(mesh);continue}const goal=s===squishHeld?.24:0;
+// Critically stable substeps keep the release softly bouncy even on slower devices.
+const steps=Math.max(1,Math.ceil(dt/.008)),step=dt/steps;for(let i=0;i<steps;i++){s.velocity+=((goal-s.amount)*150-s.velocity*15)*step;s.amount+=s.velocity*step}
+s.tick+=dt;if(s.tick<1/30&&Math.abs(s.amount)>1e-4)continue;s.tick=0;
+const attr=mesh.geometry.attributes.position;if(s!==squishHeld&&Math.abs(s.amount)<.0002&&Math.abs(s.velocity)<.002){attr.array.set(s.base);attr.needsUpdate=true;mesh.geometry.computeVertexNormals();mesh.geometry.computeBoundingSphere();squishStates.delete(mesh);continue}
+const base=s.base,r=s.radius,n=s.normal;
+// One continuous, shared volume warp for body, outline and icing alike.
+// Depth-independent lateral weights keep nearby surface layers together instead
+// of separately depressing the outer skin and its supporting interior.
+const bottom=Number.isFinite(s.bottom)?s.bottom:0,height=Math.max(.001,(s.top??bottom+r*2)-bottom),anchorHeight=Math.min(height*.28,r*.55),invRadius=1/(r*r*.95);
+for(let i=0;i<attr.count;i++){
+ const j=i*3,dx=base[j]-s.point.x,dy=base[j+1]-s.point.y,dz=base[j+2]-s.point.z;
+ const axial=dx*n.x+dy*n.y+dz*n.z,tx=dx-axial*n.x,ty=dy-axial*n.y,tz=dz-axial*n.z;
+ const lateral2=tx*tx+ty*ty+tz*tz,weight=Math.exp(-lateral2*invRadius);
+ // Smoothly anchor the underside to the plate; do not split the geometry into
+ // independently animated body/detail regions or interpolate different warps.
+ const u=clamp((base[j+1]-bottom)/Math.max(.001,anchorHeight)),anchor=u*u*(3-2*u);
+ const depth=Math.min(r*s.amount*.72,height*.20)*weight*anchor;
+ const bulge=s.amount*.075*weight*anchor;
+ attr.setXYZ(i,base[j]-n.x*depth+tx*bulge,Math.max(bottom,base[j+1]-n.y*depth+ty*bulge),base[j+2]-n.z*depth+tz*bulge);
+}
+// Attach the icing to the deformed body skin, rather than pushing it
+// independently into the volume. Rotate its original relief with that skin.
+const bindings=mesh.userData.icingBindings;
+if(bindings?.length){
+ const a=new T.Vector3(),b=new T.Vector3(),c=new T.Vector3(),surface=new T.Vector3(),normal=new T.Vector3(),edge=new T.Vector3(),offset=new T.Vector3(),rotation=new T.Quaternion();
+ for(const binding of bindings){
+  a.fromBufferAttribute(attr,binding.a);b.fromBufferAttribute(attr,binding.b);c.fromBufferAttribute(attr,binding.c);
+  surface.copy(a).multiplyScalar(binding.wa).addScaledVector(b,binding.wb).addScaledVector(c,binding.wc);
+  normal.copy(b).sub(a).cross(edge.copy(c).sub(a));
+  if(normal.lengthSq()<1e-14)normal.copy(binding.restNormal);else normal.normalize();
+  rotation.setFromUnitVectors(binding.restNormal,normal);
+  offset.copy(binding.restOffset).applyQuaternion(rotation);
+  surface.add(offset);attr.setXYZ(binding.vertex,surface.x,surface.y,surface.z);
+ }
+}
+attr.needsUpdate=true;mesh.geometry.computeVertexNormals();mesh.geometry.computeBoundingSphere();}}
+function pick(){ray.setFromCamera(ndc,camera);const hits=ray.intersectObjects(pieces,true);if(!hits.length)return null;let o=hits[0].object;while(o&&!pieces.includes(o))o=o.parent;return o}
+function onBowl(){return Math.hypot(ptr.x,ptr.z)<.8}function nearPiece(p,r=.36){const v=p.getWorldPosition(new T.Vector3());return Math.hypot(v.x-ptr.x,v.z-ptr.z)<r*p.userData.size}
+function beginPipe(){if(Math.abs(ptr.x)>1.38||Math.abs(ptr.z)>.83){toast('バットの内側に絞りましょう');return}if(pieces.some(p=>Math.hypot(p.position.x-ptr.x,p.position.z-ptr.z)<.51*size)){toast('少し間隔を空けて絞りましょう');return}activePiece=makePiece(ptr.x,ptr.z);tone(420)}
+canvas.addEventListener('pointerdown',e=>{if(!running||paused||complete||photo||ptr.down||e.button!==0)return;e.preventDefault();wake();project(e);if(!ptr.valid)return;ptr.down=true;ptr.id=e.pointerId;ptr.lastX=ptr.x;ptr.lastZ=ptr.z;canvas.setPointerCapture(e.pointerId);if(stage===0)beginPrepDrag();if(stage===1)beginWhipDrag();if(stage===2)beginSyrupDrag();if(stage===3)beginCombineDrag();if(stage===5)beginColourDrag();if(stage===6&&!orbiting&&$('toolChoice').classList.contains('hidden'))beginFreePipe();if(stage===10)selected=pick()});
+canvas.addEventListener('pointermove',e=>{if(ptr.id!==null&&e.pointerId!==ptr.id)return;project(e);updateHandCursor();if(!ptr.down||paused||complete)return;if(stage===0)movePrepDrag();if(stage===1)moveWhipDrag();if(stage===2)moveSyrupDrag();if(stage===3)moveCombineDrag();if(stage===5)moveColourDrag();const dx=ptr.x-ptr.lastX,dz=ptr.z-ptr.lastZ,dist=Math.hypot(dx,dz);if(dist<.6){if(stage===5)mixColourDish(dist);if(stage===3&&combineDrag.kind==='mix'&&onBowl()){combineMotion+=dist;const radius=Math.hypot(ptr.x,ptr.z),previousRadius=Math.hypot(ptr.lastX,ptr.lastZ);if(radius>.07&&previousRadius>.07){let turn=Math.atan2(ptr.z,ptr.x)-Math.atan2(ptr.lastZ,ptr.lastX);turn=Math.atan2(Math.sin(turn),Math.cos(turn));if(Math.abs(turn)<1.2)mixTurn+=turn;}}if(stage===0&&!bathing&&!prepDrag.kind&&inColdBath()&&Math.hypot(ptr.lastX+1.48,ptr.lastZ)<.55){soakHandDistance+=dist}if(stage===0&&bathing&&inHotSmallBowl()&&Math.hypot(ptr.lastX-smallBowl.position.x,ptr.lastZ-smallBowl.position.z)<.40){prepStirDistance+=dist}if(stage===1&&whipDrag.kind==='mix'&&Math.hypot(ptr.x,ptr.z)<.67&&Math.abs(bowlTilt)>=.10){if(Math.hypot(ptr.x,ptr.z)>.07&&Math.hypot(ptr.lastX,ptr.lastZ)>.07){const turn=Math.atan2(Math.sin(Math.atan2(ptr.z,ptr.x)-Math.atan2(ptr.lastZ,ptr.lastX)),Math.cos(Math.atan2(ptr.z,ptr.x)-Math.atan2(ptr.lastZ,ptr.lastX)));if(Math.abs(turn)<1.2){mixAngle+=turn;mixTurn+=turn;}}const cap=sugar===0?.32:sugar===1?.66:1;const before=progress;progress=Math.min(cap,progress+dist*.075);whipDistance+=dist;if(before<cap&&progress>=cap){tone(760);toast(cap===1?'しっかりした角が立ちました！ ミキサーを離して確認しましょう':`白っぽくふんわり。上の砂糖を${sugar+1}回目の分だけ入れましょう`)}}if(stage===2&&syrupDrag.kind==='handle'&&syrupIngredients.every(c=>c.userData.used))syrupBlend=clamp(syrupBlend+dist*.3);if(stage===4&&onBowl())progress+=dist*.12;if(stage===9){for(const p of pieces)if(nearPiece(p,.4)){p.userData.clean=clamp(p.userData.clean+dist*1.3);paintDust(p,(p.userData.dusting||0)*(1-p.userData.clean))}}if(stage===10&&selected){selected.position.x=clamp(ptr.x,-2.15,2.15);selected.position.z=clamp(ptr.z,-1.3,1.3)}}ptr.lastX=ptr.x;ptr.lastZ=ptr.z});
+function drop(e){if(e.pointerId!==ptr.id)return;project(e);if((stage===0&&prepDrag.kind)||(stage===1&&whipDrag.kind==='sugar')||(stage===2&&syrupDrag.kind==='ingredient')||(stage===3&&combineDrag.kind==='gelatin')||(stage===10&&selected))utensilSE(stage===10?'plate':'glass');if(stage===0){movePrepDrag();dropPrepDrag()}if(stage===1){moveWhipDrag();dropWhipDrag()}if(stage===2){moveSyrupDrag();dropSyrupDrag()}if(stage===3){moveCombineDrag();dropCombineDrag()}if(stage===5){moveColourDrag();dropColourDrag()}if(stage===10&&selected){const p=selected;const within=Math.hypot(p.position.x-plate.position.x,p.position.z-plate.position.z)<.7;if(within){p.userData.plated=true;seatOnPlate(p,true);tone(680)}else if(!p.userData.plated){tray.attach(p);p.position.set(p.userData.x,.107,p.userData.z);p.scale.setScalar(p.userData.size*p.userData.fill);toast('右のお皿の内側に置きましょう')}else{p.position.set(p.userData.plateX,p.userData.plateY??.16,p.userData.plateZ)}if(p.userData.plated){p.userData.plateX=p.position.x;p.userData.plateY=p.position.y;p.userData.plateZ=p.position.z}}
+release();updateUI()}
+canvas.addEventListener('pointerup',drop);canvas.addEventListener('pointercancel',()=>{finishOutline(true);if(selected&&stage===10){if(selected.userData.plated)selected.position.set(selected.userData.plateX,selected.userData.plateY??.16,selected.userData.plateZ);else{tray.attach(selected);selected.position.set(selected.userData.x,.107,selected.userData.z);selected.scale.setScalar(selected.userData.size*selected.userData.fill)}}release()});canvas.addEventListener('lostpointercapture',()=>{finishOutline(true);orbiting=false;orbitId=null;pipeTarget=null;pipeLast=null;cancelColourDrag();if(prepDrag.kind)restorePrepDrag();cancelCombineDrag();cancelSyrupDrag();ptr.down=false;ptr.id=null});canvas.addEventListener('contextmenu',e=>e.preventDefault());
+// Reparent on selection, preserving the world transform; drag at a comfortable serving size.
+canvas.addEventListener('pointerdown',()=>{if(stage===10&&selected){scene.attach(selected);selected.scale.setScalar(selected.userData.size*.66);selected.position.y=.24}});
+// Bake every visible body/decorative surface into the same local coordinate system.
+// Vertex colours preserve icing colours while one mesh shares one deformation field.
+function unifyFinishedMarshmallow(piece){
+ if(piece.userData.unifiedForSquish)return;
+ scene.updateMatrixWorld(true);
+ const inverse=piece.matrixWorld.clone().invert(),positions=[],normals=[],colours=[],indices=[];
+ const originals=[],detailVertices=[],bodyIndices=[];let offset=0,roughness=0,vertexCount=0;
+ piece.traverse(o=>{if(!o.isMesh||!visibleInScene(o))return;
+  const g=o.geometry,a=g.attributes.position;if(!a||!a.count)return;
+  if(!g.attributes.normal)g.computeVertexNormals();
+  const transform=new T.Matrix4().multiplyMatrices(inverse,o.matrixWorld),normalMatrix=new T.Matrix3().getNormalMatrix(transform);
+  const n=g.attributes.normal,existingColour=g.attributes.color;
+  const materials=Array.isArray(o.material)?o.material:[o.material];
+  // Recipe meshes use a single material; retain group colours if present as well.
+  const vertexMaterials=new Array(a.count).fill(materials[0]);
+  if(materials.length>1)for(const group of g.groups){const m=materials[group.materialIndex]||materials[0];for(let k=group.start;k<Math.min(group.start+group.count,g.index?g.index.count:a.count);k++)vertexMaterials[g.index?g.index.getX(k):k]=m;}
+  const p=new T.Vector3(),normal=new T.Vector3(),c=new T.Color();
+  for(let i=0;i<a.count;i++){
+   p.fromBufferAttribute(a,i).applyMatrix4(transform);normal.fromBufferAttribute(n,i).applyNormalMatrix(normalMatrix);
+   positions.push(p.x,p.y,p.z);normals.push(normal.x,normal.y,normal.z);
+   const m=vertexMaterials[i];c.copy(m.color||new T.Color('#ffffff'));
+   if(m.vertexColors&&existingColour)c.multiply(new T.Color().fromBufferAttribute(existingColour,i));
+   colours.push(c.r,c.g,c.b);roughness+=m.roughness??.7;vertexCount++;
+  }
+  const reflected=transform.determinant()<0,count=g.index?g.index.count:a.count;
+  for(let i=0;i+2<count;i+=3){const a0=offset+(g.index?g.index.getX(i):i),b=offset+(g.index?g.index.getX(i+1):i+1),c0=offset+(g.index?g.index.getX(i+2):i+2);indices.push(a0,reflected?c0:b,reflected?b:c0);}
+  if(o.userData.pipingRole==='detail'){for(let i=0;i<a.count;i++)detailVertices.push(offset+i);}else{for(let i=0;i+2<count;i+=3){const ai=offset+(g.index?g.index.getX(i):i),bi=offset+(g.index?g.index.getX(i+1):i+1),ci=offset+(g.index?g.index.getX(i+2):i+2);bodyIndices.push(ai,reflected?ci:bi,reflected?bi:ci);}}
+  offset+=a.count;originals.push(o);
+ });
+ if(!vertexCount)return;
+ const geometry=new T.BufferGeometry();
+ geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+ geometry.setAttribute('normal',new T.Float32BufferAttribute(normals,3));
+ geometry.setAttribute('color',new T.Float32BufferAttribute(colours,3));geometry.setIndex(indices);
+ geometry.computeBoundingBox();geometry.computeBoundingSphere();
+ const material=foodMat.clone();material.color.set('#ffffff');material.vertexColors=true;
+ material.map=null;material.bumpMap=null;material.bumpScale=0;material.roughness=roughness/vertexCount;
+ const unified=new T.Mesh(geometry,material);unified.castShadow=unified.receiveShadow=true;
+ unified.userData.pipingRole='body';unified.userData.unifiedMarshmallow=true;
+ // Bind each icing vertex to the underlying body triangle once, at completion.
+ // During touch, interpolate that triangle's displacement, preserving icing relief.
+ if(detailVertices.length&&bodyIndices.length){
+  const skin=new T.BufferGeometry();skin.setAttribute('position',geometry.attributes.position);skin.setIndex(bodyIndices);skin.computeBoundingSphere();
+  const probeMaterial=new T.MeshBasicMaterial({side:T.DoubleSide}),probeMesh=new T.Mesh(skin,probeMaterial),probe=new T.Raycaster();probeMesh.updateMatrixWorld(true);
+  const bindings=[],a=new T.Vector3(),b=new T.Vector3(),c=new T.Vector3(),v=new T.Vector3(),normal=new T.Vector3(),weights=new T.Vector3(),triangle=new T.Triangle();
+  const reach=.75;
+  for(const vertex of detailVertices){
+   v.fromBufferAttribute(geometry.attributes.position,vertex);normal.fromBufferAttribute(geometry.attributes.normal,vertex).normalize();
+   if(normal.lengthSq()<.5)normal.set(0,1,0);
+   probe.set(v.clone().addScaledVector(normal,reach),normal.clone().negate());probe.far=reach*2;
+   const hits=probe.intersectObject(probeMesh,false);let best=null,distance=Infinity;
+   for(const h of hits){const d=h.point.distanceToSquared(v);if(d<distance){best=h;distance=d;}}
+   if(!best)continue;
+   const face=best.face;a.fromBufferAttribute(geometry.attributes.position,face.a);b.fromBufferAttribute(geometry.attributes.position,face.b);c.fromBufferAttribute(geometry.attributes.position,face.c);triangle.set(a,b,c);triangle.getBarycoord(best.point,weights);
+   if(![weights.x,weights.y,weights.z].every(Number.isFinite))continue;
+   const restSurface=a.clone().multiplyScalar(weights.x).addScaledVector(b,weights.y).addScaledVector(c,weights.z);
+   const restNormal=b.clone().sub(a).cross(c.clone().sub(a)).normalize();
+   const restOffset=v.clone().sub(restSurface);
+   bindings.push({vertex,a:face.a,b:face.b,c:face.c,wa:weights.x,wb:weights.y,wc:weights.z,restNormal,restOffset});
+  }
+  unified.userData.icingBindings=bindings;skin.dispose();probeMaterial.dispose();
+ }
+ // Remove hidden construction surfaces too, so picking cannot hit an old part.
+ const oldGeometries=new Set(),oldMaterials=new Set();
+ piece.traverse(o=>{if(o.isMesh){oldGeometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material])oldMaterials.add(m);}});
+ for(const child of [...piece.children])piece.remove(child);
+ piece.add(unified);piece.userData.material=material;piece.userData.unifiedForSquish=true;
+ oldGeometries.forEach(g=>g.dispose());
+ oldMaterials.forEach(m=>{if(![foodMat,earMat,eyeMat,eyeShine].includes(m))m.dispose();});
+}
+function finish(){release();workspaceStage=11;document.body.classList.remove('piping-layout','colouring-layout');dishPagination.classList.add('hidden');$('dishShelf').classList.add('hidden');complete=true;paused=false;$('previousStep').classList.add('hidden');$('plateColourUI').classList.add('hidden');cameraPan.set(0,0,0);cameraKeys.clear();orbitYaw=0;orbitPitch=.88;zoomView(2/3);orbitCamera();tray.visible=false;bag.visible=brush.visible=shaker.visible=false;
+// Settle bottom to top, then preserve the complete plate-relative arrangement.
+scene.updateMatrixWorld(true);const seatingOrder=[...pieces].sort((a,b)=>new T.Box3().setFromObject(a).min.y-new T.Box3().setFromObject(b).min.y);for(const p of pieces)p.userData.plated=false;for(const p of seatingOrder){seatOnPlate(p,true);p.userData.plated=true;}
+scene.updateMatrixWorld(true);for(const p of pieces)plate.attach(p);
+plate.position.set(0,0,0);plate.scale.setScalar(1.35);plate.updateMatrixWorld(true);
+for(const p of pieces){scene.attach(p);unifyFinishedMarshmallow(p);}
+// Construction fusion entries are obsolete after baking; do not resurrect them on reset.
+fusedCream.length=0;fusionPending=0;liveFusionDirty=false;
+$('next').classList.add('hidden');$('card').classList.add('hidden');$('palette').classList.add('hidden');$('reference').classList.add('hidden');$('result').textContent=`ふわふわのマシュマロ ${pieces.length} 個を、お皿に盛り付けました。`;document.querySelector('header').classList.add('hidden');$('finish').classList.remove('hidden');tone(880)}
+$('next').onclick=skipForward;$('start').onclick=()=>{wake();reset()};$('restart').onclick=reset;$('again').onclick=reset;$('pause').onclick=togglePause;$('resume').onclick=togglePause;$('sound').onclick=()=>{sound=!sound;$('sound').textContent=sound?'♪':'♩';if(sound)wake()};$('view').onclick=()=>{release();$('finish').classList.add('hidden');$('viewBack').classList.remove('hidden');photo=true;zoomView(2/3);toast('左クリック・長押しでふにふに · 右ドラッグで回転 · WASDで移動 · ホイールでズーム')};$('viewBack').onclick=()=>{release();$('finish').classList.remove('hidden');$('viewBack').classList.add('hidden');photo=false;cameraKeys.clear();cameraPan.set(0,0,0);zoomView(2/3)};window.addEventListener('keydown',e=>{if(e.code==='Escape'){if(photo)$('viewBack').click();else togglePause()}});window.addEventListener('blur',()=>{release();if(running&&!complete&&!paused)togglePause()});document.addEventListener('visibilitychange',()=>{if(document.hidden){release();if(running&&!complete&&!paused)togglePause()}});
+// Non-destructive structural checks. Browser interaction and GPU rendering still need manual verification.
+function runTests(){const results=[];const test=(name,passed)=>results.push({test:name,passed:!!passed});test('opaque starch bed covers cooking sheet',starchBed.parent===tray&&starchBed.geometry.parameters.width>=3.5&&!starchBed.material.transparent);test('full-screen workspace viewport',workViewport.x===0&&workViewport.y===0);test('default zoom is 150 percent',Math.abs(viewScale-2/3)<1e-8);test('camera frustum finite',[camera.left,camera.right,camera.top,camera.bottom].every(Number.isFinite)&&camera.right>camera.left&&camera.top>camera.bottom);test('non-text toolbar controls allow camera keys',(()=>{const el=document.activeElement;return !el||!['BUTTON','SELECT'].includes(el.tagName)||!editableUI()})());test('16 icing colours',icingColours.length===16&&colourPots.length===16);test('freehand piping UI',!!$('dishShelf')&&!!$('chooseCornet')&&!!$('chooseBag'));test('piping state finite',Number.isFinite(orbitYaw)&&Number.isFinite(orbitPitch));test('colour overlay contained inside cream',colourDishes.every(d=>d.userData.tint.geometry.parameters.radius<.19));test('large dish button',parseFloat(getComputedStyle($('addDish')).width)>=140);test('skip button outside instruction card',$('next').parentElement===document.body);test('colouring dish state valid',colourDishes.every(d=>Number.isFinite(d.userData.mix)));test('10 playable recipe steps (combined fourth step)',stages.length-1===10);test('combined mixing timers finite',Number.isFinite(combineSeconds)&&Number.isFinite(combinePour));test('pan remains outside bowl throughout tilt',Array.from({length:101},(_,i)=>i/100*1.03).every(a=>{const extent=.70*Math.abs(Math.cos(a))+.46*Math.abs(Math.sin(a));return .90+.24+extent-extent>.88+.20}));test('gelatin pouring bowl has vertical clearance',1.34-Math.hypot(.43,.28)>.69);test('mix rotation values finite',Number.isFinite(mixAngle)&&Number.isFinite(mixTurn));test('visible syrup and gelatin ribbons exist',combineRibbons.children.length===8);test('hand mixer has two beaters',mixerBeaters.length===2);test('two sugar cups above bowl',sugarCups.length===2&&sugarCups.every(c=>c.position.z<-.9));test('stiff peak belongs to bowl',stiffPeak.parent===bowl);test('top-down camera',camera.isOrthographicCamera&&camera.position.x===0&&camera.up.z===-1);test('highlight exposure reduced',renderer.toneMappingExposure<1);test('powder capacity',powder.count<=1600);test('all piece positions finite',pieces.every(p=>[p.position.x,p.position.y,p.position.z].every(Number.isFinite)));test('all foam coordinates finite',Array.from(foamBase).every(Number.isFinite));test('plate mesh exists',plate.children.length>=3);test('completion overlay exists',!!$('finish')&&!!$('result'));test('three gelatin sheets',prepSheets.length===3);test('cold-small-hot bowl order',coldBath.position.x<0&&hotBath.position.x>0);test('gelatin soaking states valid',prepSheets.every(s=>Number.isFinite(s.userData.soak)));test('teaspoon exists in prep scene',prepSpoon.parent===prep&&prepSpoon.children.length===2);test('stir distance valid',Number.isFinite(prepStirDistance)&&prepStirDistance>=0);test('hand soaking distance valid',Number.isFinite(soakHandDistance)&&soakHandDistance>=0);test('cold bath ripples exist',soakRipples.length===3);test('zoom range valid (50–2000 percent)',viewScale>=MIN_VIEW_SCALE&&viewScale<=MAX_VIEW_SCALE);test('3D pen plane is finite',!pipeStrokePlane||[pipeStrokePlane.normal.x,pipeStrokePlane.normal.y,pipeStrokePlane.normal.z,pipeStrokePlane.constant].every(Number.isFinite));test('three syrup ingredient cups',syrupIngredients.length===3);test('syrup ingredients above pan',syrupIngredients.every(c=>c.position.z< -1));test('dial right of pan',dial.position.x>1);test('syrup burner exists',flameJets.length===20);test('syrup power valid',syrupPower>=0&&syrupPower<=1);test('zoom controls exist',!!$('zoomOut')&&!!$('zoomIn')&&!!$('zoomReset'));test('saucepan handle faces front',saucepan.children[4].position.z===1);test('open saucepan wall',panWall.geometry.type==='LatheGeometry');test('ingredient addition effects exist',additionDrops.length===36&&sugarPile.parent===syrupAddition&&amberSwirl.parent===syrupAddition);console.table(results);return {passed:results.every(r=>r.passed),results}}
+window.marshmallowDiagnostics={runTests,getState:()=>({stage,progress,pieces:pieces.length,plated:platedCount(),heat,sugar,syrupPower,syrupBlend,syrupIngredientsAdded:syrupIngredients.filter(c=>c.userData.used).length,paused,complete,zoomPercent:Math.round(100/viewScale),soakedSheets:prepSheets.filter(s=>s.userData.soak>=1).length,drawCalls:renderer.info.render.calls})};runTests();
+let last=performance.now(),ui=0,t=0,autoReadyStage=-1,autoReadyTime=0;
+// Free-form sculpting has no objective completion condition: the Next button
+// deliberately remains its finish action. All measurable steps advance on success.
+function autoAdvanceCompletedStep(dt){
+ if(!running||paused||complete||orbiting||!$('toolChoice').classList.contains('hidden')){autoReadyTime=0;return}
+ let ready=false;
+ switch(stage){
+ case 0:ready=bathing&&meltAmount>=1;break;
+ case 1:ready=progress>=1&&sugar===2;break;
+ case 2:ready=heat>=110&&syrupIngredients.every(c=>c.userData.used);break;
+ case 3:ready=combinePhase==='gelatinMix'&&combineSeconds>=10;break;
+ case 4:ready=progress>=1;break;
+ // Colouring and modelling are creative steps: advance only with the Next button.
+ case 5:break;
+ // Free drawing has no measurable end: keep the Next button as its finish action.
+ case 6:break;
+ case 7:ready=pieces.length>0&&pieces.every(p=>(p.userData.dusting||0)>=.98);break;
+ case 8:ready=progress>=1;break;
+ case 9:ready=pieces.length>0&&pieces.every(p=>p.userData.clean>=.997);break;
+ case 10:break; // Plating is finished only by the user's completion button.
+ }
+ if(!ready){autoReadyStage=stage;autoReadyTime=0;return}
+ if(autoReadyStage!==stage){autoReadyStage=stage;autoReadyTime=0}
+ autoReadyTime+=dt;
+ if(autoReadyTime>=(stage===2?0:.85)){autoReadyTime=0;if(stage===10)finish();else next()}
+}
+function frame(now){requestAnimationFrame(frame);const dt=clamp((now-last)/1000,0,.04);last=now;t+=dt;const active=running&&!paused&&!complete;if(active){age+=dt;if(stage===0){const handActive=ptr.down&&!bathing&&!prepDrag.kind&&inColdBath();const handMotion=handActive?Math.min(soakHandDistance,dt*2):0;soakHandDistance=0;if(handMotion>.0002)kitchenLiquidSE('hand',clamp(handMotion/Math.max(dt,.001),.3,1));let newlySoaked=false;for(const s of prepSheets){if(!s.userData.inSmall&&prepDrag.sheet!==s){const before=s.userData.soak;s.userData.soak=clamp(before+handMotion/4);if(before<1&&s.userData.soak>=1)newlySoaked=true;s.material.opacity=mix(.78,.52,s.userData.soak);s.scale.set(1+s.userData.soak*.09,1,1+s.userData.soak*.09);s.position.y=.318+Math.sin(t*2+s.userData.index)*.003-(handMotion>0?.014:0);if(handMotion>0)s.rotation.y=(s.userData.index-1)*.08+Math.sin(t*4+s.userData.index)*.07}}if(newlySoaked){tone(660);toast('3枚ともふやけました。1枚ずつ中央の小さいボウルへ移しましょう')}for(let i=0;i<soakRipples.length;i++){const ripple=soakRipples[i];ripple.visible=handActive&&handMotion>0;const phase=(t*1.6+i/3)%1;ripple.scale.setScalar(.4+phase*1.6);ripple.material.opacity=(1-phase)*.4;ripple.position.x=clamp((ptr.x+1.48)*.35,-.14,.14);ripple.position.z=clamp(ptr.z*.35,-.14,.14)}updateHandCursor();if(bathing){const stirring=ptr.down&&inHotSmallBowl();const stirred=stirring?Math.min(prepStirDistance,dt*2):0;prepStirDistance=0;if(stirred>.0002)kitchenLiquidSE('stir',clamp(stirred/Math.max(dt,.001),.3,1));meltAmount=clamp(meltAmount+stirred/7);meltedGelatin.visible=meltAmount>.005;smallBowl.position.y=.20+Math.sin(t*1.7)*.006;smallBowl.rotation.z=Math.sin(t*1.4)*.012;prepSpoon.visible=true;const reach=stirring?.26:.12,offsetX=ptr.x-smallBowl.position.x,offsetZ=ptr.z-smallBowl.position.z,offsetLength=Math.hypot(offsetX,offsetZ),limit=offsetLength>reach?reach/offsetLength:1;prepSpoon.position.set(smallBowl.position.x+(stirring?offsetX*limit:.10),smallBowl.position.y+.15,smallBowl.position.z+(stirring?offsetZ*limit:.04));prepSpoon.rotation.set(stirring?-.12:-.25,stirring?Math.atan2(offsetX,offsetZ)*.3:-.4,0);meltedGelatin.scale.y=stirred>0?1+Math.sin(t*18)*.18:1;meltedGelatin.material.opacity=mix(.12,.82,meltAmount);for(const s of prepSheets){s.scale.y=Math.max(.025,1-meltAmount);s.material.opacity=.52*(1-meltAmount);s.visible=meltAmount<.98}}else smallBowl.rotation.z=0;const soakedTotal=prepSheets.reduce((a,s)=>a+s.userData.soak,0)/3,placedTotal=prepSheets.filter(s=>s.userData.inSmall).length/3;progress=soakedTotal*.2+placedTotal*.35+meltAmount*.45;if(bathing&&meltAmount>=1)progress=1;for(let i=0;i<steam.children.length;i++){const puff=steam.children[i],phase=(t*.22+i/8)%1;puff.position.set(Math.sin(i*2.4+t*.3)*.29,.36+phase*.55,Math.cos(i*2.4)*.25);puff.scale.set(.07+phase*.09,.035+phase*.04,.07+phase*.09);puff.material.opacity=(1-phase)*.085}coldWater.rotation.y=t*.08;hotWater.rotation.y=-t*.06;}
+if(stage===1){const f=clamp(progress);bowl.rotation.z=mix(bowl.rotation.z,bowlTilt,.14);const mixing=ptr.down&&whipDrag.kind==='mix'&&Math.hypot(ptr.x,ptr.z)<.67&&Math.abs(bowlTilt)>=.10&&progress<1;handMixer.position.set(clamp(ptr.x,-.43,.43),mixing?.83:1.13,clamp(ptr.z,-.43,.43));handMixer.rotation.z=-bowlTilt*.4;for(const rotor of mixerBeaters)if(mixing)rotor.rotation.y-=mixTurn*8;mixTurn=0;stiffPeak.visible=f>=.96&&!mixing;stiffPeak.scale.y=clamp((f-.9)*10);if(f>=1&&!whipReady){whipReady=true;tone(880)}foam.scale.y=mix(.08,.48,f);foam.position.y=mix(.22,.32,f);foamMaterial.roughness=mix(.35,.64,f);foamMaterial.color.setRGB(mix(.65,.91,f),mix(.61,.86,f),mix(.49,.76,f));foamBubbles.visible=true;for(let i=0;i<foamBubbles.children.length;i++){const b=foamBubbles.children[i];if(mixing){const a=mixAngle+i*2.399,r=.10+(i%12)*.043;b.position.x=Math.cos(a)*r;b.position.z=Math.sin(a)*r;}b.position.y=.27+f*.22+Math.sin(i+t*(mixing?15:2))*(mixing?.021:.008);b.scale.setScalar((.014+(i%7)*.003)*(1-f*.72))}const pos=foam.geometry.attributes.position;for(let i=0;i<pos.count;i++){const x=foamBase[i*3],y=foamBase[i*3+1],z=foamBase[i*3+2],a=Math.atan2(z,x),r=Math.hypot(x,z);pos.setXYZ(i,x,y+f*.07*Math.sin(a*6+r*17-mixAngle*6)*(r/.72),z)}pos.needsUpdate=true;if(now-(foam.userData.lastNormalTime??0)>100){foam.geometry.computeVertexNormals();foam.userData.lastNormalTime=now}}
+if(stage===2){const allAdded=syrupIngredients.every(c=>c.userData.used),lit=syrupPower>.005;flameRing.visible=lit;flameRing.material.opacity=.35+syrupPower*.5;for(let i=0;i<flameJets.length;i++){const jet=flameJets[i];jet.visible=lit;jet.scale.y=(.35+syrupPower*1.2)*(1+.12*Math.sin(t*24+i));}saucepan.rotation.x=mix(saucepan.rotation.x,panTiltX,.15);saucepan.rotation.z=mix(saucepan.rotation.z,panTiltZ,.15);panLiquid.rotation.x=-saucepan.rotation.x;panLiquid.rotation.z=-saucepan.rotation.z;const count=syrupIngredients.filter(c=>c.userData.used).length;panLiquid.position.y=.335+count*.032;panLiquid.scale.x=panLiquid.scale.z=.94;if(allAdded){if(lit)heat=Math.min(110,heat+dt*(heat<100?12:4.5)*syrupPower);else if(heat<110)heat=Math.max(22,heat-dt*.7);syrupBlend=clamp(syrupBlend+dt*syrupPower*.012);progress=(heat-22)/88;}syrupBubbles.visible=allAdded&&heat>75;for(let i=0;i<syrupBubbles.children.length;i++){const b=syrupBubbles.children[i];b.position.y=panLiquid.position.y+.018;const pulse=.55+.45*Math.sin(t*(5+syrupPower*6)+i*2);b.scale.setScalar((.012+(i%5)*.006)*pulse*(.2+progress));}const hasWater=syrupIngredients[0].userData.used,hasAmber=syrupIngredients[1].userData.used,hasSugar=syrupIngredients[2].userData.used;
+panLiquid.material.color.set(hasSugar?'#dfd3b4':hasAmber?'#c8a45f':'#91b8c3').lerp(new T.Color('#d6b56e'),clamp((heat-75)/60)*.30);panLiquid.material.opacity=hasSugar?.92:hasAmber?.83:hasWater?.52:.3;panLiquid.material.roughness=mix(hasSugar?.42:.15,.17,syrupBlend);
+if(additionTime>0){additionTime=Math.max(0,additionTime-dt);for(let i=0;i<additionDrops.length;i++){const d=additionDrops[i],phase=((1.25-additionTime)*1.8+d.userData.phase)%1,a=i*2.399,r=.065+((i*7)%13)/13*.11;d.position.set(Math.cos(a)*r,panLiquid.position.y+.025+(1-phase)*.43,Math.sin(a)*r);d.visible=additionTime>0;}}
+const dissolving=(syrupDrag.kind==='handle'?.45:.025)+syrupPower*.13;sugarDissolve=Math.max(0,sugarDissolve-dt*dissolving);amberDissolve=Math.max(0,amberDissolve-dt*dissolving*.8);sugarPile.visible=sugarDissolve>.015;sugarPile.position.set(.10,panLiquid.position.y+.045*sugarDissolve,-.06);sugarPile.scale.set(Math.sqrt(sugarDissolve),sugarDissolve,Math.sqrt(sugarDissolve));amberSwirl.visible=amberDissolve>.015;amberSwirl.position.y=panLiquid.position.y+.012;amberSwirl.rotation.z=t*.55;amberSwirl.material.opacity=amberDissolve*.8;amberSwirl.scale.set(1+(1-amberDissolve)*.6,1+(1-amberDissolve)*.6,.65);if(heat>=110){syrupPower=0;flameRing.visible=false;flameJets.forEach(j=>j.visible=false);toast('110℃になりました。火を止めて、次の工程へ！');progress=1;} }
+if(stage===3){
+const pouring=combinePhase==='pour'&&ptr.down&&combineDrag.kind==='pour';
+const tilt=pouring?clamp((ptr.z-combineDrag.startZ)/.55):0;
+// Lift the pan above the far rim; keep a safe gap in both plan and elevation.
+saucepan.rotation.x=mix(saucepan.rotation.x,tilt*1.02,.13);
+saucepan.rotation.z=0;
+const panAngle=saucepan.rotation.x;
+saucepan.position.set(.08,1.10+tilt*.45,-1.64);
+panLiquid.rotation.x=-panAngle;
+panLiquid.rotation.z=0;
+stream.visible=false;
+if(pouring&&tilt>.35){combinePour=clamp(combinePour+dt*tilt*.22);saucepan.updateMatrixWorld(true);const lip=saucepan.localToWorld(new T.Vector3(0,.425,.60));drawCombineStream(lip,new T.Vector3(.08,.32+.72*(.48+combinePour*.12)+.012,-.27),.85,'#d6aa59');if(combineEffectTime<=0)startCombineEffect('syrup');combineEffectTime=4;}
+panLiquid.scale.x=panLiquid.scale.z=.94*(1-combinePour*.32);panLiquid.position.y=.42-combinePour*.15;
+if(combinePhase==='pour'&&combinePour>=1){combinePhase='syrupMix';combineSeconds=0;combineTimerStarted=false;combineDrag.kind=null;saucepan.visible=false;stream.visible=false;panLiquid.visible=false;stiffPeak.visible=false;tone(760);startCombineEffect('syrup');toast('シロップ投入完了！ 生地が少し増え、琥珀色の筋が広がりました。高速で30秒混ぜましょう')}
+const mixingPhase=combinePhase==='syrupMix'||combinePhase==='gelatinMix';
+const moving=mixingPhase&&ptr.down&&combineDrag.kind==='mix'&&onBowl()&&combineMotion>.001;
+const turnThisFrame=moving?mixTurn:0;mixTurn=0;mixAngle+=turnThisFrame;
+combineMotion=0;
+handMixer.visible=mixingPhase;handMixer.position.set(clamp(ptr.x,-.43,.43),moving?.83:1.13,clamp(ptr.z,-.43,.43));
+// Start on the first real drag, then count elapsed active game time even at rest.
+if(mixingPhase&&moving)combineTimerStarted=true;
+if(mixingPhase&&combineTimerStarted)combineSeconds=Math.min(combinePhase==='syrupMix'?30:10,combineSeconds+dt);
+if(moving){for(const rotor of mixerBeaters)rotor.rotation.y-=turnThisFrame*8}
+if(combinePhase==='gelatinPour'){
+gelatinPourTime=Math.min(1.35,gelatinPourTime+dt);smallBowl.visible=true;smallBowl.position.set(-.16,1.34,-1.33);smallBowl.rotation.set(.72+gelatinPourTime*.22,0,0);smallBowl.updateMatrixWorld(true);drawCombineStream(smallBowl.localToWorld(new T.Vector3(0,.25,.40)),new T.Vector3(-.16,.32+.72*(.60+gelatinPourTime/1.35*.055)+.012,-.22),.7,'#d5b468');meltedGelatin.scale.setScalar(Math.max(.02,1-gelatinPourTime/1.35));if(combineEffectKind!=='gelatin'||combineEffectTime<=0)startCombineEffect('gelatin');combineEffectTime=4;
+if(gelatinPourTime>=1.35){combinePhase='gelatinMix';combineSeconds=0;combineTimerStarted=false;smallBowl.visible=false;stream.visible=false;startCombineEffect('gelatin');tone(790);toast('ゼラチン投入完了！ 生地の表面につやが出ました。軽く10秒混ぜましょう')}
+}
+const gelatinAdded=combinePhase==='gelatinMix'?1:combinePhase==='gelatinPour'?gelatinPourTime/1.35:0;
+foam.scale.y=.48+combinePour*.12+gelatinAdded*.055+(moving?Math.sin(t*18)*.009:0);
+foamMaterial.color.set('#eadfce').lerp(new T.Color('#f4e6ce'),combinePour*.72);
+foamMaterial.roughness=mix(.60,.28,gelatinAdded);foamMaterial.clearcoat=.15+gelatinAdded*.48;
+// Raised liquid level, amber ribbons and persistent gloss make each addition readable.
+const syrupRemaining=combinePhase==='pour'?combinePour:combinePhase==='syrupMix'?1-clamp(combineSeconds/30):0;
+const gelatinRemaining=combinePhase==='gelatinPour'?gelatinAdded:combinePhase==='gelatinMix'?1-clamp(combineSeconds/10):0;
+combineRibbons.visible=syrupRemaining>.005||gelatinRemaining>.005;
+for(const ribbon of combineRibbons.children){const amount=ribbon.userData.kind==='syrup'?syrupRemaining:gelatinRemaining;ribbon.visible=amount>.005;ribbon.material.opacity=amount*.88;ribbon.position.y=.32+.72*foam.scale.y+.016;ribbon.rotation.y=-mixAngle;}
+foamBubbles.visible=false;
+// Movement-driven whisk trails, a shallow vortex, orbiting foam and falling droplets.
+mixFX.visible=moving;
+const surface=.32+.72*foam.scale.y;
+const fxX=clamp(ptr.x,-.27,.27),fxZ=clamp(ptr.z,-.27,.27);
+for(let i=0;i<swirlRings.length;i++){const r=swirlRings[i];r.position.set(fxX*.35,surface+.012+i*.002,fxZ*.35);r.rotation.z=-mixAngle+i*.6;r.scale.set(1+Math.sin(t*9-i)*.055,1, .76+Math.cos(t*7+i)*.08);r.material.opacity=.19+i*.055;}
+for(let i=0;i<mixSpecks.length;i++){const d=mixSpecks[i],a=mixAngle+i*2.399,r=.12+(i%9)*.043;d.position.set(Math.cos(a)*r,surface+.012+Math.abs(Math.sin(a*2+i))*.026,Math.sin(a)*r);d.scale.set(.012+(i%3)*.004,.007,.022);}
+const fpos=foam.geometry.attributes.position;
+for(let i=0;i<fpos.count;i++){const x=foamBase[i*3],y=foamBase[i*3+1],z=foamBase[i*3+2],r=Math.hypot(x,z),a=Math.atan2(z,x);const top=clamp(y/.72),edge=clamp(1-r/.75);const wave=moving?(Math.sin(a*5+r*21-mixAngle*5)*.035-Math.exp(-((x-fxX)**2+(z-fxZ)**2)*15)*.065):Math.sin(a*3+r*12+t*1.7)*.006;fpos.setXYZ(i,x,y+wave*top*edge,z)}
+fpos.needsUpdate=true;if(now-(foam.userData.lastNormalTime??0)>100){foam.geometry.computeVertexNormals();foam.userData.lastNormalTime=now}
+pourDroplets.visible=combineEffectTime>0;
+for(let i=0;i<pourDroplets.children.length;i++){const d=pourDroplets.children[i],p=(t*1.6+i/22)%1,a=i*2.399,r=.04+p*.20;d.position.set((combineEffectKind==='syrup'?.08:-.23)+Math.cos(a)*r,surface+.02+Math.sin(p*Math.PI)*.12,(combineEffectKind==='syrup'?-.27:-.12)+Math.sin(a)*r);d.scale.setScalar((1-p)*.016+.003);}
+if(combineEffectTime>0){combineEffectTime=Math.max(0,combineEffectTime-dt*(moving?1.6:1));combineRipples.visible=true;for(const r of combineRipples.children){const phase=(t*.8+r.userData.offset)%1;r.position.set(combineEffectKind==='syrup'?.08:-.23,.32+.72*foam.scale.y+.008,combineEffectKind==='syrup'?-.27:-.12);r.scale.setScalar(.4+phase*2.3);r.material.opacity=(1-phase)*.8*Math.min(1,combineEffectTime);}}else combineRipples.visible=false;
+if(combinePhase==='syrupMix'&&combineSeconds>=30){combineSeconds=0;combineTimerStarted=false;combinePhase='gelatin';combineDrag.kind=null;handMixer.visible=false;smallBowl.visible=true;tone(760);toast('30秒混ぜました。上の溶かしゼラチンの小鉢をボウルへドラッグしてください')}
+progress=combinePhase==='pour'?combinePour*.2:combinePhase==='syrupMix'?.2+clamp(combineSeconds/30)*.5:combinePhase==='gelatin'?.7:.75+clamp(combineSeconds/10)*.25;
+// The prepared small bowl keeps its original gelatin, but is shown independently of the bath.
+if(combinePhase==='gelatin'){if(smallBowl.parent!==scene)scene.attach(smallBowl);smallBowl.visible=true}
+if(combinePhase==='gelatinMix'&&combineSeconds>=10){progress=1;toast('ゼラチンを10秒混ぜ合わせました。次は色づけです！')}
+}
+if(stage===5){moveColourDrag();if(colourDrag.kind==='mix'&&colourDrag.dish){const u=colourDrag.dish.userData;u.cream.position.set(0,.13,0);u.cream.scale.x=u.cream.scale.z=.19;u.tint.position.set(0,.188,0);u.tint.rotation.set(-Math.PI/2,0,0);u.tint.scale.setScalar(1)}}if(stage===4){foamMaterial.roughness=.6;foamMaterial.color.set('#eadfce');foam.scale.y=.48}
+if(stage===4){whisk.position.set(clamp(ptr.x,-.6,.6),ptr.down?.85:1.1,clamp(ptr.z,-.6,.6));if(ptr.down&&onBowl())whisk.rotation.y+=dt*15}
+if(stage===6){bag.visible=false;if(ptr.down&&!orbiting&&outlineStroke)updateOutline(now);if(ptr.down&&!orbiting&&pipeTarget)emitPiping(dt);
+// Keep the joined skin active during the stroke, not just after pointer-up.
+// Throttle expensive level-set updates independently of smooth pointer sampling.
+if(!orbiting&&ptr.down&&liveFusionDirty&&now-lastLiveFusion>=1100){
+ rebuildCreamFusion(true);liveFusionDirty=false;lastLiveFusion=now;
+ // Always refine the preview once the stroke has finished.
+ fusionPending=now+220;
+}else if(!ptr.down&&!orbiting&&((fusionPending&&now>=fusionPending)||(liveFusionDirty&&now-lastLiveFusion>=260))){
+ rebuildCreamFusion(false);liveFusionDirty=false;lastLiveFusion=now;
+}}
+if(stage===7){shaker.visible=false;updateSifting(dt);progress=pieces.length?pieces.reduce((sum,p)=>sum+(p.userData.dusting||0),0)/pieces.length:0;}
+if(stage===8)progress=age/5;
+if(stage===9){brush.position.set(ptr.x,.36,ptr.z);if(ptr.down){for(const p of pieces)if(nearPiece(p,.4)){p.userData.clean=clamp(p.userData.clean+dt*.22);paintDust(p,(p.userData.dusting||0)*(1-p.userData.clean))}}brush.rotation.y=ptr.down?Math.sin(t*12)*.12:0;progress=pieces.reduce((a,p)=>a+p.userData.clean,0)/Math.max(1,pieces.length);if(progress>.997)progress=1;powder.material.opacity=1-progress*.45;powder.material.transparent=true}
+// All objective completion conditions advance through the shared, short-delay handler.
+}
+
+autoAdvanceCompletedStep(dt);
+updateSquish(dt);
+touchPanel.classList.toggle('hidden',!running||paused||complete&&!photo);
+$('touchTools').classList.toggle('hidden',![5,6].includes(stage)||complete);$('touchHelp').classList.toggle('hidden',![5,6].includes(stage)||complete);
+// Render static recipe views only when needed, without stopping simulation or audio.
+if(complete&&!photo){orbitYaw+=dt*.12;orbitCamera();}
+fallingStarch.visible=stage===7&&!complete;if(stage!==7){siftParticles.length=0;fallGeometry.setDrawRange(0,0)}moveCameraKeys(dt);positionDishButton();cookingSE(active,t);updateBGM();$('previousStep').disabled=stage<=0||paused||!running;ui+=dt;if(ui>.12){if(stage>=0)updateUI();ui=0}if(workspaceStage===6){const v=workViewport;renderer.setScissorTest(false);renderer.setViewport(0,0,innerWidth,innerHeight);renderer.clear();renderer.setViewport(v.x,innerHeight-v.y-v.height,v.width,v.height);renderer.setScissor(v.x,innerHeight-v.y-v.height,v.width,v.height);renderer.setScissorTest(true);renderer.render(scene,camera);renderer.setScissorTest(false)}else{renderer.setViewport(0,0,innerWidth,innerHeight);renderer.render(scene,camera)}}
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();release();paused=true;$('errorText').textContent='WebGLの接続が失われました。再読み込みしてください。';$('error').classList.remove('hidden')});
+syrupStation.visible=false;handMixer.visible=false;sugarCups.forEach(c=>c.visible=false);prep.visible=bowl.visible=whisk.visible=saucepan.visible=tray.visible=plate.visible=gelatin.visible=bag.visible=brush.visible=shaker.visible=false;$('next').disabled=true;$('loading').classList.add('hidden');requestAnimationFrame(frame);
+}catch(e){console.error(e);$('loading').classList.add('hidden');$('errorText').textContent=e.message||String(e);$('error').classList.remove('hidden')}
+</script>
+</body>
+</html>
