@@ -682,32 +682,36 @@ function kitchenLiquidSE(kind,intensity=1){
  if(!audio||!kitchenAudio||!sound||paused||!running)return;
  const now=audio.currentTime,interval=kind==='stir'?.29:kind==='syrup'?.23:kind==='hand'?.25:.20;
  if(now-(liquidLast[kind]??-10)<interval)return;liquidLast[kind]=now;
- const pulses=kind==='water'?5:kind==='plop'?2:kind==='stir'?2:3;
+ // Irregular filtered splashes carry the sound; bubbles stay quiet and short.
+ const pulses=kind==='water'?4:kind==='plop'?1:kind==='stir'?2:2;
  const strength=clamp(intensity,.25,1);
  for(let i=0;i<pulses;i++){
-  const at=now+i*(kind==='water'?.10:kind==='syrup'?.075:.065),duration=kind==='plop'?.19:.12+Math.random()*.045;
+  const at=now+i*(kind==='water'?.075:kind==='syrup'?.083:.055)+Math.random()*.025,duration=kind==='plop'?.16:kind==='stir'?.20:.10+Math.random()*.085;
   const osc=audio.createOscillator(),gain=audio.createGain();
-  const f=(kind==='plop'?175:kind==='syrup'?235:kind==='stir'?390:320)*(1+Math.random()*.35);
-  osc.type='sine';osc.frequency.setValueAtTime(f,at);osc.frequency.exponentialRampToValueAtTime(f*(kind==='plop'?.43:.68),at+duration);
-  gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime((kind==='plop'?.080:kind==='syrup'?.050:.035)*strength,at+.009);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  const f=(kind==='plop'?165:kind==='syrup'?245:kind==='stir'?290:420)*(.85+Math.random()*.5);
+  osc.type='sine';osc.frequency.setValueAtTime(f,at);osc.frequency.exponentialRampToValueAtTime(f*(1.12+Math.random()*.16),at+duration*.65);
+  // Brief, low-level resonances avoid the old cartoon-like descending whistles.
+  const bubbleLevel=kind==='plop'?.022:kind==='syrup'?.008:kind==='stir'?.0015:.003;
+  gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(bubbleLevel*strength,at+.006);gain.gain.exponentialRampToValueAtTime(.0001,at+duration*.65);
   osc.connect(gain);gain.connect(kitchenAudio.bus);osc.start(at);osc.stop(at+duration+.01);osc.onended=()=>{osc.disconnect();gain.disconnect()};
   const splash=audio.createBufferSource(),filter=audio.createBiquadFilter(),ng=audio.createGain();splash.buffer=kitchenAudio.liquidBuffer;
-  filter.type='bandpass';filter.frequency.value=kind==='plop'?460:kind==='syrup'?650:kind==='stir'?1300:1800;filter.Q.value=kind==='stir'?1.1:.65;
+  filter.type='bandpass';filter.frequency.value=(kind==='plop'?580:kind==='syrup'?850:kind==='stir'?1150:1900)*(.8+Math.random()*.4);filter.Q.value=.45;
+  filter.frequency.setTargetAtTime(filter.frequency.value*.72,at+.025,.065);
   // Soft metal-on-bowl texture accompanies the liquid swish during spoon movement.
-  if(kind==='stir'&&i===0){const tap=audio.createOscillator(),tg=audio.createGain();tap.type='sine';tap.frequency.setValueAtTime(1650+Math.random()*200,at);tg.gain.setValueAtTime(.0001,at);tg.gain.exponentialRampToValueAtTime(.010*strength,at+.003);tg.gain.exponentialRampToValueAtTime(.0001,at+.055);tap.connect(tg);tg.connect(kitchenAudio.bus);tap.start(at);tap.stop(at+.06);tap.onended=()=>{tap.disconnect();tg.disconnect()};}
-  ng.gain.setValueAtTime(.0001,at);ng.gain.exponentialRampToValueAtTime((kind==='plop'?.014:kind==='syrup'?.018:.038)*strength,at+.012);ng.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  if(kind==='stir'&&i===0&&Math.random()<.18){const tap=audio.createOscillator(),tg=audio.createGain();tap.type='sine';tap.frequency.setValueAtTime(2300+Math.random()*650,at);tg.gain.setValueAtTime(.0001,at);tg.gain.exponentialRampToValueAtTime(.0025*strength,at+.002);tg.gain.exponentialRampToValueAtTime(.0001,at+.035);tap.connect(tg);tg.connect(kitchenAudio.bus);tap.start(at);tap.stop(at+.04);tap.onended=()=>{tap.disconnect();tg.disconnect()};}
+  ng.gain.setValueAtTime(.0001,at);ng.gain.exponentialRampToValueAtTime((kind==='plop'?.060:kind==='syrup'?.043:kind==='stir'?.075:.090)*strength,at+(kind==='stir'?.045:.009));ng.gain.exponentialRampToValueAtTime(.0001,at+duration);
   splash.connect(filter);filter.connect(ng);ng.connect(kitchenAudio.bus);splash.start(at,Math.random()*.8);splash.stop(at+duration+.01);splash.onended=()=>{splash.disconnect();filter.disconnect();ng.disconnect()};
  }
 }
 function cookingSE(active,time){if(!kitchenAudio||!audio)return;if(time-(kitchenAudio.lastUpdate??-1)<.05)return;kitchenAudio.lastUpdate=time;let noise=0,motor=0,hz=145,cut=800;const acting=active&&ptr.down;
 // Keep only pouring, electric mixing, heating, dusting and brushing. Gentle fades avoid clicks.
-if(active&&stage===1&&acting&&whipDrag.kind==='mix'&&Math.abs(bowlTilt)>=.10&&progress<1){motor=.022;noise=.016;hz=170;cut=1000;}
+if(active&&stage===1&&acting&&whipDrag.kind==='mix'&&Math.abs(bowlTilt)>=.10&&progress<1){motor=.007;noise=.043;hz=112;cut=1500;}
 if(active&&stage===2){noise=syrupPower*.016+Math.max(0,heat-75)/35*.014;cut=850;// Ingredient pours use distinct splash/plop voices instead of generic noise.
 }
-if(active&&stage===3){if(stream.visible){kitchenLiquidSE('syrup',.8);cut=700;}if(mixFX.visible){motor=.022;noise=.018;hz=combinePhase==='gelatinMix'?110:170;cut=1050;}}
+if(active&&stage===3){if(stream.visible){kitchenLiquidSE('syrup',.8);cut=700;}if(mixFX.visible){motor=.007;noise=.043;hz=combinePhase==='gelatinMix'?95:112;cut=1450;}}
 if(acting&&stage===7&&Math.abs(ptr.x)<1.8&&Math.abs(ptr.z)<1.2){noise=.022;cut=1800;}
 if(acting&&stage===9&&pieces.some(p=>nearPiece(p,.4))){noise=.018;cut=1400;}
-const at=audio.currentTime;kitchenAudio.bus.gain.setTargetAtTime(sound?.65:0,at,.10);kitchenAudio.ng.gain.setTargetAtTime(noise*(.98+.02*Math.sin(time*9)),at,.10);kitchenAudio.mg.gain.setTargetAtTime(motor,at,.12);kitchenAudio.motor.frequency.setTargetAtTime(hz+Math.sin(time*6)*2,at,.12);kitchenAudio.filter.frequency.setTargetAtTime(cut,at,.12);}
+const at=audio.currentTime;kitchenAudio.bus.gain.setTargetAtTime(sound?.65:0,at,.10);kitchenAudio.ng.gain.setTargetAtTime(noise*(.97+.018*Math.sin(time*7.13)+.012*Math.sin(time*11.71)),at,.10);kitchenAudio.mg.gain.setTargetAtTime(motor,at,.12);kitchenAudio.motor.frequency.setTargetAtTime(hz+Math.sin(time*6)*2,at,.12);kitchenAudio.filter.frequency.setTargetAtTime(cut,at,.12);}
 function utensilSE(kind='glass'){return; /* Dish contact sounds intentionally disabled. */ if(!sound||!audio)return;const o=audio.createOscillator(),g=audio.createGain(),at=audio.currentTime;o.type='sine';o.frequency.setValueAtTime(kind==='plate'?1350:2100,at);o.frequency.exponentialRampToValueAtTime(kind==='plate'?720:1100,at+.16);g.gain.setValueAtTime(.035,at);g.gain.exponentialRampToValueAtTime(.0001,at+.22);o.connect(g);g.connect(audio.destination);o.start();o.stop(at+.23);} 
 function wake(){try{audio??=new(window.AudioContext||window.webkitAudioContext)();initKitchenAudio();initBGM();audio.resume().then(updateBGM).catch(()=>{})}catch{}}function tone(freq=580){return; /* Notification tones intentionally disabled. */ if(!sound||!audio)return;const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.frequency.setValueAtTime(freq,t);o.frequency.exponentialRampToValueAtTime(freq*.75,t+.13);g.gain.setValueAtTime(.025,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g);g.connect(audio.destination);o.start();o.stop(t+.2)}function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2500)}
 const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-.2),hit=new T.Vector3(),ptr={x:0,z:0,lastX:0,lastZ:0,down:false,id:null,valid:false};
